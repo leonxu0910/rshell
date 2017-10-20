@@ -12,5 +12,5 @@ int main (int argc, char *argv[]) {
     } while (userInput != "Exit");
  
  
-    return 0;   
+    return 0;
 }

@@ -1,6 +1,7 @@
 #ifndef __EXECSHELL__
 #define __EXECSHELL__
 #include <queue>
+#include "ShellComponent.h"
 
 class ExecShell {
   private:
