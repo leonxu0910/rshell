@@ -1,10 +1,16 @@
 #include "../header/ExecShell.h"
+#include "../header/Bin.h"
+#include "../header/And.h"
+#include "../header/Or.h"
+#include "../header/Semicolon.h"
 #include <string>
 #include <vector>
 #include <cstring>
+#include <iostream>
 
 using std::string;
 using std::vector;
+using std::cout;
 
 ExecShell::ExecShell() { this->userInput = ""; }
 
@@ -13,11 +19,15 @@ ExecShell::ExecShell(string input) {
 }
 
 void ExecShell::execute() {
-    
+    this->parseLine();
 }
 
 void ExecShell::parseLine() {
     vector<string> vToken;
+    std::size_t found = userInput.find("#");
+    if(found != string::npos) {
+        userInput = userInput.substr(0, found);
+    }
     char* cstr = new char [userInput.length() + 1];
     cstr = strcpy(cstr, userInput.c_str());
     char* tok = strtok(cstr, " ");
@@ -34,4 +44,17 @@ void ExecShell::parseLine() {
         }
         tok = strtok(NULL, " ");
     }
+    for(int i = 0; i < vToken.size(); ++i) {
+        cout << vToken.at(i) << " " << std::endl;
+    }
+    
+    vector<string> temp;
+    for(i = 0; i < vToken.size(); ++i) {
+        
+    }
+    
+    
+    
+    
+    
 }
