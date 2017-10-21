@@ -3,9 +3,9 @@
 #include "Command.h"
 
 class Bin : public Command {
-    
-    
-    
+  public:
+    Bin(std::vector<std::string> v) : Command(v) {}
+    bool execute();
     
 };
 

@@ -3,7 +3,8 @@
 
 class ShellComponent {
   public:
-    virtual void bool execute() = 0;
+    ShellComponent() {}
+    virtual bool execute() = 0;
     
 };
 
