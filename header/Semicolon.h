@@ -3,9 +3,8 @@
 #include "Connector.h"
 
 class Semicolon : public Connector {
-    
-    
-    
+    public:
+        Semicolon(bool s) : Connector(s) {}
     
 };
 

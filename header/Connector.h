@@ -3,7 +3,10 @@
 #include "ShellComponent.h"
 
 class Connector : public ShellComponent {
-
+    private:
+        bool status;
+    protected:
+        Connector(bool s) : status(s) {}
     
 };
 

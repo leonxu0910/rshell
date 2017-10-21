@@ -3,8 +3,8 @@
 #include "Connector.h"
 
 class And : public Connector {
-    
-    
+    public:
+        And(bool s) : Connector(s) {}
     
     
 };
