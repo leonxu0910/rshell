@@ -11,27 +11,28 @@
 using std::string;
 using std::vector;
 using std::cout;
+using std::endl;
 
-ExecShell::ExecShell() { this->userInput = ""; }
+ExecShell::ExecShell() {}
 
-ExecShell::ExecShell(string input) {
-    this->userInput = input;
+void ExecShell::execute(string userInput) {
+    this->parseLine(userInput);
 }
 
-void ExecShell::execute() {
-    this->parseLine();
-}
-
-void ExecShell::parseLine() {
+void ExecShell::parseLine(string userInput) {
+    cout << "call parseLine" << endl;
     vector<string> vToken;
-    std::size_t found = userInput.find("#");
-    unsigned i = 0;
-    if(found != string::npos) {
-        userInput = userInput.substr(0, found);
+    std::size_t findComment = userInput.find("#");
+    
+    // Ignore everything after comment sign
+    if(findComment != string::npos) {
+        userInput = userInput.substr(0, findComment);
     }
+    
     char* cstr = new char [userInput.length() + 1];
     cstr = strcpy(cstr, userInput.c_str());
     char* tok = strtok(cstr, " ");
+    
     while(tok != NULL) {
         string element = tok;
         string semiColon = "";
@@ -46,35 +47,54 @@ void ExecShell::parseLine() {
         tok = strtok(NULL, " ");
     }
     
-    for(i = 0; i < vToken.size(); ++i) {
+    // test
+    for(unsigned i = 0; i < vToken.size(); ++i) {
         cout << vToken.at(i) << " " << std::endl;
     }
     
-    for(i = 0; i < vToken.size(); ++i) {
-        vector<string> temp;
-        string temporary = vToken.at(i);
-        if(temporary != "||" || temporary != "&&" || temporary != ";") {
-            temp.push_back(temporary);
+    // Insert shell command from vector to queue
+    vector<string> temp;
+    string buffer = "";
+    Bin* newBin = 0;
+    for (unsigned i = 0; i < vToken.size(); ++i) {
+        if (!(vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
+            temp.push_back(vToken.at(i));
         }
         else {
-            if(temp.size() != 0) {
-                Bin* newBin = new Bin(temp);
+            if (buffer == "") {
+                newBin = new Bin(temp);
                 cmdQ.push(newBin);
-            }
-            if(temporary == "||") {
-                Or* newOr = new Or();
-                cmdQ.push(newOr);
-            }
-            else if(temporary == "&&") {
-                And* newAnd = new And();
-                cmdQ.push(newAnd);
+                buffer = vToken.at(i);
             }
             else {
-                Semicolon* newSemi = new Semicolon();
-                cmdQ.push(newSemi);
+                for (unsigned j = i+1; j < vToken.size(); ++j) {
+                    if (!(vToken.at(j) == "||" || vToken.at(j) == "&&" || vToken.at(j) == ";")) {
+                        temp.push_back(vToken.at(j));
+                    }
+                }
+                
+                newBin = new Bin(temp);
+                if(vToken.at(i) == "||") {
+                    Or* newOr = new Or(newBin);
+                    cmdQ.push(newOr);
+                    buffer = "||";
+                }
+                else if (vToken.at(i) == "&&") {
+                    And* newAnd = new And(newBin);
+                    cmdQ.push(newAnd);
+                    buffer = "&&";
+                } 
+                else if (vToken.at(i) == ";") {
+                    Semicolon* newSemi = new Semicolon(newBin);
+                    cmdQ.push(newSemi);
+                    buffer = ";";
+                }
             }
         }
+        
+        if (buffer != "") {
+            temp.clear();
+        }
+        newBin = 0;
     }
-    
-    
 }

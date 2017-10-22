@@ -4,7 +4,7 @@
 
 class Semicolon : public Connector {
   public:
-    Semicolon() : Connector() {}
+    Semicolon(ShellComponent* component) : Connector(component) {}
     bool execute();
     
 };

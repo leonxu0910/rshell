@@ -4,7 +4,7 @@
 
 class And : public Connector {
   public:
-    And() : Connector() {}
+    And(ShellComponent* component) : Connector(component) {}
     bool execute();
     
 };

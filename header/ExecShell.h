@@ -6,16 +6,14 @@
 
 class ExecShell {
   private:
-    std::string userInput;
     std::queue<ShellComponent*> cmdQ;
     
   public:
     ExecShell();
-    ExecShell(std::string input);
-    void execute();
+    void execute(std::string);
     
   private:
-    void parseLine();
+    void parseLine(std::string);
     
     
 };

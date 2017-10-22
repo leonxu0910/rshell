@@ -5,9 +5,11 @@
 class Connector : public ShellComponent {
   protected:
     bool status;
+    ShellComponent* next;
     
   public:
-    Connector() : ShellComponent() {
+    Connector(ShellComponent* component) : ShellComponent() {
+        this->next = component;
         status = false;
     }
     void setStatus(bool done) {

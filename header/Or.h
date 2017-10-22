@@ -4,7 +4,7 @@
 
 class Or : public Connector {
   public:
-    Or() : Connector() {}
+    Or(ShellComponent* component) : Connector(component) {}
     bool execute();
     
 };

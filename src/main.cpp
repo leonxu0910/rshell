@@ -1,16 +1,17 @@
-// #include <iostream>
-// using namespace std;
+#include <iostream>
+#include "../header/ExecShell.h"
+using namespace std;
 
-// int main (int argc, char *argv[]) {
-//     string userInput;
-    
-//     do {
-//         cout << "$ ";
-//         getline(cin, userInput);
+int main (int argc, char *argv[]) {
+    string userInput;
+    ExecShell exec;
+    do {
+        cout << "$ ";
+        getline(cin, userInput);
+        exec.execute(userInput);
         
-        
-//     } while (userInput != "Exit");
+    } while (userInput != "Exit");
  
  
-//     return 0;
-// }
+    return 0;
+}
