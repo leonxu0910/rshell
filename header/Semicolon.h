@@ -4,7 +4,8 @@
 
 class Semicolon : public Connector {
     public:
-        Semicolon(bool s) : Connector(s) {}
+        Semicolon() : Connector() {}
+        bool execute() { return true;}
     
 };
 

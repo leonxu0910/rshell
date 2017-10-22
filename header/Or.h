@@ -4,9 +4,8 @@
 
 class Or : public Connector {
     public:
-        Or(bool s) : Connector(s) {}
-    
-    
+        Or() : Connector() {}
+        bool execute() { return true;}
     
 };
 

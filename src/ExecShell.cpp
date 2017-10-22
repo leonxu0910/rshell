@@ -25,6 +25,7 @@ void ExecShell::execute() {
 void ExecShell::parseLine() {
     vector<string> vToken;
     std::size_t found = userInput.find("#");
+    unsigned i = 0;
     if(found != string::npos) {
         userInput = userInput.substr(0, found);
     }
@@ -44,17 +45,36 @@ void ExecShell::parseLine() {
         }
         tok = strtok(NULL, " ");
     }
-    for(int i = 0; i < vToken.size(); ++i) {
+    
+    for(i = 0; i < vToken.size(); ++i) {
         cout << vToken.at(i) << " " << std::endl;
     }
     
-    vector<string> temp;
     for(i = 0; i < vToken.size(); ++i) {
-        
+        vector<string> temp;
+        string temporary = vToken.at(i);
+        if(temporary != "||" || temporary != "&&" || temporary != ";") {
+            temp.push_back(temporary);
+        }
+        else {
+            if(temp.size() != 0) {
+                Bin* newBin = new Bin(temp);
+                cmdQ.push(newBin);
+            }
+            if(temporary == "||") {
+                Or* newOr = new Or();
+                cmdQ.push(newOr);
+            }
+            else if(temporary == "&&") {
+                And* newAnd = new And();
+                cmdQ.push(newAnd);
+            }
+            else {
+                Semicolon* newSemi = new Semicolon();
+                cmdQ.push(newSemi);
+            }
+        }
     }
-    
-    
-    
     
     
 }

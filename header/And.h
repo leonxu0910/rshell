@@ -4,7 +4,8 @@
 
 class And : public Connector {
     public:
-        And(bool s) : Connector(s) {}
+        And() : Connector() {}
+        bool execute() { return true;}
     
     
 };

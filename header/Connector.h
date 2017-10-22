@@ -3,11 +3,13 @@
 #include "ShellComponent.h"
 
 class Connector : public ShellComponent {
-    private:
+    public:
         bool status;
-    protected:
-        Connector(bool s) : status(s) {}
-    
+        Connector() : ShellComponent() {
+            status = true;
+        }
+    private:
+        virtual bool execute() = 0;
 };
 
 #endif
