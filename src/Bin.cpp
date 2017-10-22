@@ -11,13 +11,13 @@ using std::vector;
 using std::string;
 
 void Bin::execute() {
-    if (argsVec.at(0) == "exit") {
-        exit(0);
-    }
-    
     if (argsVec.empty()) {
         status = 0;
         return;
+    }
+    
+    if (argsVec.at(0) == "exit") {
+        exit(0);
     }
     
     status = 1;
