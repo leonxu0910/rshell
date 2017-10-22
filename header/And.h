@@ -3,10 +3,9 @@
 #include "Connector.h"
 
 class And : public Connector {
-    public:
-        And() : Connector() {}
-        bool execute() { return true;}
-    
+  public:
+    And() : Connector() {}
+    bool execute();
     
 };
 

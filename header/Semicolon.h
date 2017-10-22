@@ -3,9 +3,9 @@
 #include "Connector.h"
 
 class Semicolon : public Connector {
-    public:
-        Semicolon() : Connector() {}
-        bool execute() { return true;}
+  public:
+    Semicolon() : Connector() {}
+    bool execute();
     
 };
 

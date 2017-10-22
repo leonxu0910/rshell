@@ -3,8 +3,9 @@
 #include "Command.h"
 
 class Exit : public Command {
-    
-    
+  public:
+    Exit(std::vector<std::string> v) : Command(v) {}
+    bool execute();
     
     
 };
