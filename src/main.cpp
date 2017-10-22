@@ -10,7 +10,7 @@ int main (int argc, char *argv[]) {
         getline(cin, userInput);
         exec.execute(userInput);
         
-    } while (userInput != "Exit");
+    } while (1);
  
  
     return 0;
