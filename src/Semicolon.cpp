@@ -1,13 +1,11 @@
 #include "../header/Semicolon.h"
 
-bool Semicolon::execute() {
-    bool done = false;
+void Semicolon::execute() {
     if (next != 0) {
-        done next->execute();
+        next->execute();
+        status = next->getStatus();
     }
     else {
         // no right operand, dont execute
     }
-    
-    return done;
 }

@@ -17,6 +17,18 @@ ExecShell::ExecShell() {}
 
 void ExecShell::execute(string userInput) {
     this->parseLine(userInput);
+    
+    ShellComponent* exec = 0;
+    while (!cmdQ.empty()) {
+        exec = cmdQ.front();
+        cmdQ.pop();
+        exec->execute();
+        if (!cmdQ.empty()) {
+            cmdQ.front()->setStatus(exec->getStatus());
+        }
+    }
+    
+    
 }
 
 void ExecShell::parseLine(string userInput) {

@@ -1,10 +1,10 @@
 #include "../header/And.h"
 
-bool And::execute() {
-    bool done = false;
-    if (status == true) {
+void And::execute() {
+    if (status == 1) {
         if (next != 0) {
-            done = next->execute();
+            next->execute();
+            status = next->getStatus();
         }
         else {
             // error: no right operand
@@ -13,5 +13,4 @@ bool And::execute() {
     else {
         // previous is false, dont execute
     }
-    return done;
 }

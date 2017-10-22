@@ -10,11 +10,17 @@
 using std::vector;
 using std::string;
 
-bool Bin::execute() {
+void Bin::execute() {
     if (argsVec.at(0) == "exit") {
         exit(0);
     }
-    bool done = true;   // return value
+    
+    if (argsVec.empty()) {
+        status = 0;
+        return;
+    }
+    
+    status = 1;
     char* args[argsVec.size()+1];
     
     // Convert string to char* in argsVec
@@ -33,20 +39,18 @@ bool Bin::execute() {
         }
     }
     if (pid > 0) {      // parent process
-        int status;
-        waitpid(pid, &status, 0);
+        int flag;
+        waitpid(pid, &flag, 0);
 
-        if (status > 0) {   
-            done = false;
+        if (flag > 0) {   
+            status = -1;
         }
-        else if (WEXITSTATUS(status) == 0) {
-            done = true;
+        else if (WEXITSTATUS(flag) == 0) {
+            status = 1;
         }
-        else if (WEXITSTATUS(status) == 1) {
-            done = false;
+        else if (WEXITSTATUS(flag) == 1) {
+            status = -1;
         }
         //cout << "parent: " << pid << endl;
     }
-    
-    return done;
 }

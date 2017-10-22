@@ -5,7 +5,7 @@
 class Exit : public Command {
   public:
     Exit(std::vector<std::string> v) : Command(v) {}
-    bool execute();
+    void execute();
     
     
 };

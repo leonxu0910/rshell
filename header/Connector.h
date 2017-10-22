@@ -4,18 +4,14 @@
 
 class Connector : public ShellComponent {
   protected:
-    bool status;
     ShellComponent* next;
     
   public:
-    Connector(ShellComponent* component) : ShellComponent() {
+    Connector(ShellComponent* component = 0) : ShellComponent() {
         this->next = component;
-        status = false;
+        status = -1;
     }
-    void setStatus(bool done) {
-        this->status = done;
-    }
-    virtual bool execute() = 0;
+    virtual void execute() = 0;
 };
 
 #endif

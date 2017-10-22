@@ -1,10 +1,10 @@
 #include "../header/Or.h"
 
-bool Or::execute() {
-    bool done;
-    if (status == false) {
+void Or::execute() {
+    if (status == -1) {
         if (next != 0) {
             next->execute();
+            status = next->getStatus();
         }
         else {
             // error: no right operand
@@ -13,6 +13,4 @@ bool Or::execute() {
     else {
         // previous is true, dont execute
     }
-    
-    return done;
 }
