@@ -1,8 +1,8 @@
-#include "ExecShell.h"
-#include "Bin.h"
-#include "And.h"
-#include "Or.h"
-#include "Semicolon.h"
+#include "../header/ExecShell.h"
+#include "../header/Bin.h"
+#include "../header/And.h"
+#include "../header/Or.h"
+#include "../header/Semicolon.h"
 #include <string>
 #include <vector>
 #include <cstring>
@@ -20,7 +20,6 @@ void ExecShell::execute(string userInput) {
 }
 
 void ExecShell::parseLine(string userInput) {
-    cout << "call parseLine" << endl;
     vector<string> vToken;
     std::size_t findComment = userInput.find("#");
     
@@ -48,9 +47,9 @@ void ExecShell::parseLine(string userInput) {
     }
     
     // test
-    for(unsigned i = 0; i < vToken.size(); ++i) {
-        cout << vToken.at(i) << " " << std::endl;
-    }
+    // for(unsigned i = 0; i < vToken.size(); ++i) {
+    //     cout << vToken.at(i) << " " << std::endl;
+    // }
     
     // Insert shell command from vector to queue
     vector<string> temp;
