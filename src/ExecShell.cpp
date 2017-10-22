@@ -1,8 +1,8 @@
-#include "../header/ExecShell.h"
-#include "../header/Bin.h"
-#include "../header/And.h"
-#include "../header/Or.h"
-#include "../header/Semicolon.h"
+#include "ExecShell.h"
+#include "Bin.h"
+#include "And.h"
+#include "Or.h"
+#include "Semicolon.h"
 #include <string>
 #include <vector>
 #include <cstring>
@@ -55,46 +55,50 @@ void ExecShell::parseLine(string userInput) {
     // Insert shell command from vector to queue
     vector<string> temp;
     string buffer = "";
-    Bin* newBin = 0;
     for (unsigned i = 0; i < vToken.size(); ++i) {
-        if (!(vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
+        if (buffer == "" && !(vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
             temp.push_back(vToken.at(i));
         }
         else {
             if (buffer == "") {
-                newBin = new Bin(temp);
-                cmdQ.push(newBin);
+                cmdQ.push(new Bin(temp));
                 buffer = vToken.at(i);
+                temp.clear();
             }
-            else {
+            if (buffer != "") {
+                unsigned offset = 0;
                 for (unsigned j = i+1; j < vToken.size(); ++j) {
                     if (!(vToken.at(j) == "||" || vToken.at(j) == "&&" || vToken.at(j) == ";")) {
                         temp.push_back(vToken.at(j));
+                        offset++;
+                    }
+                    else {
+                        break;
                     }
                 }
                 
-                newBin = new Bin(temp);
-                if(vToken.at(i) == "||") {
-                    Or* newOr = new Or(newBin);
-                    cmdQ.push(newOr);
+                if (vToken.at(i) == "||") {
+                    cmdQ.push(new Or(new Bin(temp)));
                     buffer = "||";
                 }
                 else if (vToken.at(i) == "&&") {
-                    And* newAnd = new And(newBin);
-                    cmdQ.push(newAnd);
+                    cmdQ.push(new And(new Bin(temp)));
                     buffer = "&&";
                 } 
                 else if (vToken.at(i) == ";") {
-                    Semicolon* newSemi = new Semicolon(newBin);
-                    cmdQ.push(newSemi);
+                    cmdQ.push(new Semicolon(new Bin(temp)));
                     buffer = ";";
                 }
+                i += offset;
             }
         }
         
         if (buffer != "") {
             temp.clear();
         }
-        newBin = 0;
+    }
+    
+    if (buffer == "" && !temp.empty()) {
+        cmdQ.push(new Bin(temp));
     }
 }
