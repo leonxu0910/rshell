@@ -11,6 +11,9 @@ using std::vector;
 using std::string;
 
 bool Bin::execute() {
+    if (argsVec.at(0) == "exit") {
+        exit(0);
+    }
     bool done = true;   // return value
     char* args[argsVec.size()+1];
     
