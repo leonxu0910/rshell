@@ -57,7 +57,7 @@ void ExecShell::parseLine(string userInput) {
         }
         tok = strtok(NULL, " ");
     }
-    
+    delete[] cstr;
     // test
     // for(unsigned i = 0; i < vToken.size(); ++i) {
     //     cout << vToken.at(i) << " " << std::endl;

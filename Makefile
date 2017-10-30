@@ -30,4 +30,6 @@ clean:
 	rm -f *.o
 	rm -f *.cpp~
 	rm -f *.h~
-	rm -r bin
+	rm -f src/*.o
+	rm -f *.out
+	rm -rf bin

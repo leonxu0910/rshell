@@ -20,7 +20,8 @@ void Bin::execute() {
     }
     
     status = 1;
-    char* args[argsVec.size()+1];
+    vector<char*> args;
+    args.resize(argsVec.size()+1);
     
     // Convert string to char* in argsVec
     for (unsigned i = 0; i < argsVec.size(); i++) {
@@ -33,7 +34,7 @@ void Bin::execute() {
     if (pid == 0) {     // child process
         //cout << "child: " << pid << endl;
         //cout << endl << argsVec.at(0) << ": " << endl;
-        if (execvp(args[0], args) == -1) {
+        if (execvp(args[0], args.data()) == -1) {
             perror("exec");
             exit(1);
         }
