@@ -9,11 +9,11 @@ class ShellComponent {
     ShellComponent() { status = -1; }
     virtual void execute() = 0;
     void setStatus(int done) {
-        if (done == -1 || done == 0 || done || 1) {
+        if (done == -1 || done == 0 || done == 1) {
             status = done;
         }
     }
-    const int getStatus() {
+    int getStatus() const {
         return status;
     }
     
