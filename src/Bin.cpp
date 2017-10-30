@@ -11,8 +11,6 @@ using std::vector;
 using std::string;
 
 void Bin::execute() {
-    pid_t pid = fork(); // initialize pid
-    
     if (argsVec.empty()) {
         status = 0;
         return;
@@ -29,6 +27,8 @@ void Bin::execute() {
         args[i] = (char*)argsVec.at(i).c_str();
     }
     args[argsVec.size()] = NULL;
+    
+    pid_t pid = fork(); // initialize pid
     
     if (pid == 0) {     // child process
         //cout << "child: " << pid << endl;
