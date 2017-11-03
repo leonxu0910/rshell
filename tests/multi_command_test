@@ -1,0 +1,11 @@
+echo A && echo B
+echo A || echo B
+echo A; echo B
+ls -m && echo A
+ls -m || echo A
+ls -m; echo A
+ls -m && echo A || echo B
+echo A || echo B || echo C
+echo A || echo B && echo C
+echo A && echo B && echo C  # print A, B, C
+exit
