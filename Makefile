@@ -1,5 +1,5 @@
 CC = g++
-FLAGS = -Wall -ansi -pedantic -std=c++11
+FLAGS = -Wall -Werror -ansi -pedantic -std=c++11
 BIN = bin
 SRC = src
 SOURCES = $(wildcard $(SRC)/*.cpp) 
