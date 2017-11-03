@@ -5,6 +5,12 @@
 class And : public Connector {
   public:
     And(ShellComponent* component) : Connector(component) {}
+    ~And() {
+        if (next != 0) {
+            delete next;
+            next = 0; 
+        }
+    }
     void execute();
     
 };

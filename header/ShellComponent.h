@@ -7,6 +7,7 @@ class ShellComponent {
     
   public:
     ShellComponent() { status = -1; }
+    virtual ~ShellComponent() {}
     virtual void execute() = 0;
     void setStatus(int done) {
         if (done == -1 || done == 0 || done == 1) {

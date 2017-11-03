@@ -5,6 +5,7 @@
 class Bin : public Command {
   public:
     Bin(std::vector<std::string> v) : Command(v) {}
+    ~Bin() { }
     void execute();
     
 };

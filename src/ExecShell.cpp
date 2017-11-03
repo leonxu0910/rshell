@@ -14,10 +14,12 @@ using std::cout;
 using std::endl;
 
 ExecShell::ExecShell() {}
+ExecShell::~ExecShell() {}
 
 void ExecShell::execute(string userInput) {
     this->parseLine(userInput);
     
+    // Pop the queue and execute each command
     ShellComponent* exec = 0;
     while (!cmdQ.empty()) {
         exec = cmdQ.front();
@@ -26,8 +28,10 @@ void ExecShell::execute(string userInput) {
         if (!cmdQ.empty()) {
             cmdQ.front()->setStatus(exec->getStatus());
         }
+        delete exec;
+        exec = 0;
     }
-    
+    exec = 0;
     
 }
 
@@ -44,6 +48,7 @@ void ExecShell::parseLine(string userInput) {
     cstr = strcpy(cstr, userInput.c_str());
     char* tok = strtok(cstr, " ");
     
+    // Add tokens to vector
     while(tok != NULL) {
         string element = tok;
         string semiColon = "";
@@ -58,6 +63,9 @@ void ExecShell::parseLine(string userInput) {
         tok = strtok(NULL, " ");
     }
     delete[] cstr;
+    cstr = 0;
+    tok = 0;
+    
     // test
     // for(unsigned i = 0; i < vToken.size(); ++i) {
     //     cout << vToken.at(i) << " " << std::endl;
@@ -78,7 +86,7 @@ void ExecShell::parseLine(string userInput) {
             }
             if (buffer != "") {
                 unsigned offset = 0;
-                for (unsigned j = i+1; j < vToken.size(); ++j) {
+                for (unsigned j = i+1; j < vToken.size(); ++j) {    // Search for next connector
                     if (!(vToken.at(j) == "||" || vToken.at(j) == "&&" || vToken.at(j) == ";")) {
                         temp.push_back(vToken.at(j));
                         offset++;
@@ -88,15 +96,15 @@ void ExecShell::parseLine(string userInput) {
                     }
                 }
                 
-                if (vToken.at(i) == "||") {
+                if (vToken.at(i) == "||") {                     // Or case
                     cmdQ.push(new Or(new Bin(temp)));
                     buffer = "||";
                 }
-                else if (vToken.at(i) == "&&") {
+                else if (vToken.at(i) == "&&") {                // And case
                     cmdQ.push(new And(new Bin(temp)));
                     buffer = "&&";
                 } 
-                else if (vToken.at(i) == ";") {
+                else if (vToken.at(i) == ";") {                 // Semicolon case
                     cmdQ.push(new Semicolon(new Bin(temp)));
                     buffer = ";";
                 }

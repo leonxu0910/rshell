@@ -10,12 +10,13 @@
 using std::vector;
 using std::string;
 
+    
 void Bin::execute() {
-    if (argsVec.empty()) {
+    if (argsVec.empty()) {  // no command (reaches the end)
         status = 0;
         return;
     }
-    if (argsVec.at(0) == "exit") {
+    if (argsVec.at(0) == "exit") {  // exit command
         exit(0);
     }
     
@@ -31,6 +32,11 @@ void Bin::execute() {
     
     pid_t pid = fork(); // initialize pid
     
+    if (pid == -1) {
+        //fork failed to execute
+        perror("fork");
+        exit(1);
+    }
     if (pid == 0) {     // child process
         //cout << "child: " << pid << endl;
         //cout << endl << argsVec.at(0) << ": " << endl;

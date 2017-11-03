@@ -12,6 +12,7 @@ class Command : public ShellComponent {
     Command(std::vector<std::string> v) : ShellComponent() {
         this->argsVec = v;
     }
+    virtual ~Command() {}
     virtual void execute() = 0;
     
 };

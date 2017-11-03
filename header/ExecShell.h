@@ -10,6 +10,7 @@ class ExecShell {
     
   public:
     ExecShell();
+    ~ExecShell();
     void execute(std::string);
     
   private:
