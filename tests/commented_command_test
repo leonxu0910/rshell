@@ -1,11 +1,11 @@
-echo A #echo B
-echo A #&& echo B
-echo A && echo B #&& echo C
-echo A #; echo B
-echo A #|| echo B
-#echo A
-echo A #ehiaohehihfih
+echo 123 #echo 321
+echo 123 #&& 321 wefwe
+echo a && echo 123 #&& echo 345
+echo asd #; echo 123
+echo asd; #|| echo 123
+#echo asd
+echo 123 #ehiaohehihfih
 echo #Ahoefhiehf
-echo B && echo B #ahfoiheihih
+echo 234 && echo 123; #ahfoiheihih
 echo Hello World #
 exit

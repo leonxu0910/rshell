@@ -1,11 +1,14 @@
 ls
 ls -al
-ls -m
+ls -m;
 echo A
-echo AB CD
+echo "AB CD";
+echo 1f23f;
+echo "f2d || 12e && 12e";
 pwd
 echo echo
 echa AB
-ls oahwefhiahwei
+ls asdasd
+cat "123"
 cal
 exit
