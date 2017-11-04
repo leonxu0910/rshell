@@ -1,6 +1,7 @@
-exit #just exit
+exit # echo 123
 echo A && exit #A
-echo A || exit #A, testdone
+echo A || exit #23452345;||
 echo A; exit #A
-echo A #exit #A, testdone
+echo A #exit #2324356234
+exit;
 exit
