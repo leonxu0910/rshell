@@ -1,22 +1,13 @@
 CC = g++
-FLAGS = -Wall -Werror -ansi -pedantic -std=c++11
-BIN = bin
-SRC = src
-SOURCES = $(wildcard $(SRC)/*.cpp) 
-OBJECTS = $(addprefix bin/, $(notdir $(SOURCES:.cpp=.o)))
+CC_FLAGS = -Wall -Werror -ansi -pedantic -std=c++11
 
 all: rshell
+	mkdir -p bin
+	$(CC) $(CC_FLAGS) *.o -o ./bin/rshell
 
-rshell: $(BIN)/rshell
-
-$(BIN)/rshell: $(BIN)/ $(OBJECTS)
-	$(CC) $(FLAGS) -o $@ $(OBJECTS)
-
-$(BIN)/%.o: $(SRC)/%.cpp 
-	$(CC) -c $(FLAGS) $< -o $@
-
-$(BIN)/:
-	mkdir -p $@
+rshell:
+	$(CC) $(CC_FLAGS) -c ./src/*.cpp
 
 clean:
-	rm -r $(BIN)
+	rm -f *.o
+	rm -rf bin

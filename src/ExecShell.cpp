@@ -25,9 +25,9 @@ void ExecShell::execute(string userInput) {
     while (!cmdQ.empty()) {
         exec = cmdQ.front();
         cmdQ.pop();
-        exec->execute();
+        exec->execute();    // execute command
         if (!cmdQ.empty()) {
-            cmdQ.front()->setStatus(exec->getStatus());
+            cmdQ.front()->setStatus(exec->getStatus()); // set status from previous command
         }
         delete exec;
         exec = 0;
@@ -85,59 +85,49 @@ void ExecShell::parseLine(string userInput) {
     bool isQuote = false;
     for (unsigned i = 0; i < vToken.size(); i++) {
         if (isQuote == false && (vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
-            if (buffer == "") {
-                //cout << "---10---" << endl;
+            if (buffer == "") { // first command
                 cmdQ.push(new Bin(temp));
                 temp.clear();
             }
-            else if (buffer == "&&") {
-                //cout << "---11---" << endl;
+            else if (buffer == "&&") {  // command after and
                 cmdQ.push(new And(new Bin(temp)));
                 temp.clear();
             }
-            else if (buffer == "||") {
-                //cout << "---12---" << endl;
+            else if (buffer == "||") {  // command after or
                 cmdQ.push(new Or(new Bin(temp)));
                 temp.clear();
             }
-            else if (buffer == ";") {
-                //cout << "---13---" << endl;
+            else if (buffer == ";") {   // command after semicolon
                 cmdQ.push(new Semicolon(new Bin(temp)));
                 temp.clear();
             }
-            //cout << "---1---" << endl;
             buffer = vToken.at(i);
         }
         else {
-            if (vToken.at(i) == "\"" && isQuote == false) {
+            if (vToken.at(i) == "\"" && isQuote == false) { // if command is in the quote
                 isQuote = true;
             }
-            else if (vToken.at(i) == "\"" && isQuote == true) {
+            else if (vToken.at(i) == "\"" && isQuote == true) { // quote ends
                 isQuote = false;
             }
             else {
-                //cout << "---2---" << endl;
                 temp.push_back(vToken.at(i));
             }
             
         }
     }
-    if (buffer == "" && !temp.empty()) {
-        //cout << "---3---" << endl;
+    if (buffer == "" && !temp.empty()) { // single command
         cmdQ.push(new Bin(temp));
         temp.clear();
     }
-    if (!temp.empty()) {
+    if (!temp.empty()) {    // last command
         if (buffer == "&&") {
-            //cout << "---41---" << endl;
             cmdQ.push(new And(new Bin(temp)));
         }
         else if (buffer == "||") {
-            //cout << "---42---" << endl;
             cmdQ.push(new Or(new Bin(temp)));
         }
         else if (buffer == ";") {
-            //cout << "---43---" << endl;
             cmdQ.push(new Semicolon(new Bin(temp)));
         }
         temp.clear();
