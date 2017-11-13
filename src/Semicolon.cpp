@@ -1,11 +1,13 @@
 #include "../header/Semicolon.h"
 
 void Semicolon::execute() {
+    if (prev == 0) {
+        cout << "error: incomplete argument" << endl;
+        return;
+    }
+    prev->execute();
     if (next != 0) {
         next->execute();
-        status = next->getStatus();
     }
-    else {
-        // no right operand, dont execute
-    }
+    status = 1;
 }

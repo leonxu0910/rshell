@@ -1,16 +1,27 @@
 #include "../header/And.h"
 
 void And::execute() {
-    if (status == 1) {
-        if (next != 0) {
-            next->execute();
-            status = next->getStatus();
+    if (prev == 0 || next == 0) {
+        cout << "error: incomplete argument" << endl;
+        return;
+    }
+    prev->execute();
+    if (prev->getStatus() == 1) {
+        next->execute();
+        if (next->getStatus() == 1) {
+            status = 1;
+        }
+        else if (next->getStatus() == -1) {
+            status = -1;
         }
         else {
-            // error: no right operand
+            cout << "error: incomplete argument" << endl;
         }
     }
+    else if (prev->getStatus() == -1) {
+        status = -1;
+    }
     else {
-        // previous is false, dont execute
+        cout << "error: incomplete argument" << endl;
     }
 }
