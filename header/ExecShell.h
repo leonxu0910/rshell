@@ -6,7 +6,7 @@
 
 class ExecShell {
   private:
-    std::queue<ShellComponent*> cmdQ;
+    ShellComponent* shellTree;
     
   public:
     ExecShell();

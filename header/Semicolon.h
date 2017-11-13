@@ -4,11 +4,15 @@
 
 class Semicolon : public Connector {
   public:
-    Semicolon(ShellComponent* component) : Connector(component) {}
+    Semicolon(ShellComponent* left, ShellComponent* right) : Connector(left, right) {}
     ~Semicolon() {
         if (next != 0) {
             delete next;
             next = 0; 
+        }
+        if (prev != 0) {
+            delete prev;
+            prev = 0;
         }
     }
     void execute();
