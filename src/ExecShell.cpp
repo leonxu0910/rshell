@@ -14,26 +14,20 @@ using std::queue;
 using std::cout;
 using std::endl;
 
-ExecShell::ExecShell() {}
-ExecShell::~ExecShell() {}
+ExecShell::ExecShell() {
+    shellTree = 0;
+}
+ExecShell::~ExecShell() {
+    delete shellTree;
+    shellTree = 0;
+}
 
 void ExecShell::execute(string userInput) {
     this->parseLine(userInput);
     
-    // Pop the queue and execute each command
-    ShellComponent* exec = 0;
-    while (!cmdQ.empty()) {
-        exec = cmdQ.front();
-        cmdQ.pop();
-        exec->execute();    // execute command
-        if (!cmdQ.empty()) {
-            cmdQ.front()->setStatus(exec->getStatus()); // set status from previous command
-        }
-        delete exec;
-        exec = 0;
-    }
-    exec = 0;
-    
+    shellTree->execute();
+    delete shellTree;
+    shellTree = 0;
 }
 
 void ExecShell::parseLine(string userInput) {
@@ -79,26 +73,37 @@ void ExecShell::parseLine(string userInput) {
     cstr = 0;
     tok = 0;
     
+    // test
+    // for(unsigned i = 0; i < vToken.size(); ++i) {
+    //     cout << vToken.at(i) << " " << endl;
+    // }
+    // cout << "-----------------------------------" << endl;
+    
     // Insert shell command from vector to queue
+    vector<vector<string> > shellVec;
     vector<string> temp;
+    vector<string> temp_cnt;
     string buffer = "";
     bool isQuote = false;
     for (unsigned i = 0; i < vToken.size(); i++) {
         if (isQuote == false && (vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
             if (buffer == "") { // first command
-                cmdQ.push(new Bin(temp));
+                shellVec.push_back(temp);
                 temp.clear();
             }
-            else if (buffer == "&&") {  // command after and
-                cmdQ.push(new And(new Bin(temp)));
-                temp.clear();
-            }
-            else if (buffer == "||") {  // command after or
-                cmdQ.push(new Or(new Bin(temp)));
-                temp.clear();
-            }
-            else if (buffer == ";") {   // command after semicolon
-                cmdQ.push(new Semicolon(new Bin(temp)));
+            else {
+                if (buffer == "&&") {  // command after and
+                    temp_cnt.push_back("&&");
+                }
+                else if (buffer == "||") {  // command after or
+                    temp_cnt.push_back("||");
+                }
+                else if (buffer == ";") {   // command after semicolon
+                    temp_cnt.push_back(";");
+                }
+                shellVec.push_back(temp_cnt);
+                shellVec.push_back(temp);
+                temp_cnt.clear();
                 temp.clear();
             }
             buffer = vToken.at(i);
@@ -117,19 +122,101 @@ void ExecShell::parseLine(string userInput) {
         }
     }
     if (buffer == "" && !temp.empty()) { // single command
-        cmdQ.push(new Bin(temp));
+        shellVec.push_back(temp);
         temp.clear();
     }
     if (!temp.empty()) {    // last command
         if (buffer == "&&") {
-            cmdQ.push(new And(new Bin(temp)));
+            temp_cnt.push_back("&&");
         }
         else if (buffer == "||") {
-            cmdQ.push(new Or(new Bin(temp)));
+            temp_cnt.push_back("||");
         }
         else if (buffer == ";") {
-            cmdQ.push(new Semicolon(new Bin(temp)));
+            temp_cnt.push_back(";");
         }
+        shellVec.push_back(temp_cnt);
+        shellVec.push_back(temp);
         temp.clear();
+    }
+    if (vToken.at(vToken.size()-1) == "&&") {
+        temp_cnt.push_back("&&");
+        shellVec.push_back(temp_cnt);
+    }
+    else if (vToken.at(vToken.size()-1) == "||") {
+        temp_cnt.push_back("||");
+        shellVec.push_back(temp_cnt);
+    }
+    else if (vToken.at(vToken.size()-1) == ";") {
+        temp_cnt.push_back(";");
+        shellVec.push_back(temp_cnt);
+    }
+    
+    // test
+    // for (unsigned i = 0; i < shellVec.size(); i++) {
+    //     for (unsigned j = 0; j < shellVec.at(i).size(); j++) {
+    //         cout << shellVec.at(i).at(j) << " ";
+    //     }
+    //     cout << endl;
+    // }
+    
+    Bin* bin = 0;
+    Connector* cnt = 0;
+    Connector* root = 0;
+    string cnt_tok = "";
+    if (shellVec.size() == 1) {
+        shellTree = new Bin(shellVec.at(0));
+        return;
+    }
+    else {
+        for (unsigned i = 0; i < shellVec.size(); i++) {
+            if (i == 0) {
+                bin = new Bin(shellVec.at(i));
+            }
+            else {
+                if (bin != 0) {
+                    if (shellVec.at(i).at(0) == "&&") {
+                        cnt = new And(bin, 0);
+                        cnt_tok = "&&";
+                    }
+                    else if (shellVec.at(i).at(0) == "||") {
+                        cnt = new Or(bin, 0);
+                        cnt_tok = "||";
+                    }
+                    else if (shellVec.at(i).at(0) == ";") {
+                        cnt = new Semicolon(bin, 0);
+                        cnt_tok = ";";
+                    }
+                    root = cnt;
+                    cnt = 0;
+                    bin = 0;
+                }
+                else if (cnt_tok != "") {
+                    root->setRight(new Bin(shellVec.at(i)));
+                    cnt_tok = "";
+                }
+                else {
+                    if (shellVec.at(i).at(0) == "&&") {
+                        cnt = new And(root, 0);
+                        cnt_tok = "&&";
+                    }
+                    else if (shellVec.at(i).at(0) == "||") {
+                        cnt = new Or(root, 0);
+                        cnt_tok = "||";
+                    }
+                    else if (shellVec.at(i).at(0) == ";") {
+                        cnt = new Semicolon(root, 0);
+                        cnt_tok = ";";
+                    }
+                    root = cnt;
+                    cnt = 0;
+                }
+                
+            }
+        }
+        shellTree = root;
+        root = 0;
+        cnt = 0;
+        bin = 0;
     }
 }

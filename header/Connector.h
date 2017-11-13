@@ -19,6 +19,12 @@ class Connector : public ShellComponent {
     void setRight(ShellComponent* right) {
         next = right;
     }
+    ShellComponent* getLeft() const {
+        return prev;
+    }
+    ShellComponent* getRight() const {
+         return next;
+    }
     virtual ~Connector() {}
     virtual void execute() = 0;
 };

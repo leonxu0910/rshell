@@ -1,27 +1,26 @@
 #include "../header/Or.h"
+#include <iostream>
 
 void Or::execute() {
-    if (prev == 0 || next == 0) {
-        cout << "error: incomplete argument" << endl;
-        return;
-    }
     prev->execute();
     if (prev->getStatus() == -1) {
-        next->execute();
-        if (next->getStatus() == 1) {
-            status = 1;
-        }
-        else if (next->getStatus() == -1) {
-            status = -1;
+        if (next == 0) {
+            std::cout << "error: incomplete argument" << std::endl;
         }
         else {
-            cout << "error: incomplete argument" << endl;
+            next->execute();
+            if (next->getStatus() == 1) {
+                status = 1;
+            }
+            else if (next->getStatus() == -1) {
+                status = -1;
+            }
         }
     }
     else if (prev->getStatus() == 1) {
         status = 1;
     }
     else {
-        cout << "error: incomplete argument" << endl;
+        std::cout << "error: incomplete argument" << std::endl;
     }
 }
