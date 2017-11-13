@@ -32,8 +32,7 @@ void Bin::execute() {
     
     pid_t pid = fork(); // initialize pid
     
-    if (pid == -1) {
-        //fork failed to execute
+    if (pid == -1) {    // fork failed
         perror("fork");
         exit(1);
     }
@@ -49,13 +48,13 @@ void Bin::execute() {
         int flag;
         waitpid(pid, &flag, 0);
 
-        if (flag > 0) {   
+        if (flag > 0) {   // execute failed
             status = -1;
         }
         else if (WEXITSTATUS(flag) == 0) {
             status = 1;
         }
-        else if (WEXITSTATUS(flag) == 1) {
+        else if (WEXITSTATUS(flag) == 1) {  // execute failed
             status = -1;
         }
         //cout << "parent: " << pid << endl;

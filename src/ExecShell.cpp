@@ -10,6 +10,7 @@
 
 using std::string;
 using std::vector;
+using std::queue;
 using std::cout;
 using std::endl;
 
@@ -24,9 +25,9 @@ void ExecShell::execute(string userInput) {
     while (!cmdQ.empty()) {
         exec = cmdQ.front();
         cmdQ.pop();
-        exec->execute();
+        exec->execute();    // execute command
         if (!cmdQ.empty()) {
-            cmdQ.front()->setStatus(exec->getStatus());
+            cmdQ.front()->setStatus(exec->getStatus()); // set status from previous command
         }
         delete exec;
         exec = 0;
@@ -40,7 +41,7 @@ void ExecShell::parseLine(string userInput) {
     std::size_t findComment = userInput.find("#");
     
     // Ignore everything after comment sign
-    if(findComment != string::npos) {
+    if (findComment != string::npos) {
         userInput = userInput.substr(0, findComment);
     }
     
@@ -49,15 +50,27 @@ void ExecShell::parseLine(string userInput) {
     char* tok = strtok(cstr, " ");
     
     // Add tokens to vector
-    while(tok != NULL) {
+    while (tok != NULL) {
         string element = tok;
         string semiColon = "";
-        if(element.at(element.size()-1) == ';') {
+        string quote = "";
+        if (element.at(element.size()-1) == ';') {
             element = element.substr(0, element.size()-1);
             semiColon = ";";
         }
+        if (element.at(0) == '\"') {
+            element = element.substr(1, element.size());
+            vToken.push_back("\"");
+        }
+        if (element.at(element.size()-1) == '\"') {
+            element = element.substr(0, element.size()-1);
+            quote = "\"";
+        }
         vToken.push_back(element);
-        if(semiColon == ";") {
+        if (quote == "\"") {
+            vToken.push_back(quote);
+        }
+        if (semiColon == ";") {
             vToken.push_back(semiColon);
         }
         tok = strtok(NULL, " ");
@@ -66,58 +79,57 @@ void ExecShell::parseLine(string userInput) {
     cstr = 0;
     tok = 0;
     
-    // test
-    // for(unsigned i = 0; i < vToken.size(); ++i) {
-    //     cout << vToken.at(i) << " " << std::endl;
-    // }
-    
     // Insert shell command from vector to queue
     vector<string> temp;
     string buffer = "";
-    for (unsigned i = 0; i < vToken.size(); ++i) {
-        if (buffer == "" && !(vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
-            temp.push_back(vToken.at(i));
-        }
-        else {
-            if (buffer == "") {
+    bool isQuote = false;
+    for (unsigned i = 0; i < vToken.size(); i++) {
+        if (isQuote == false && (vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
+            if (buffer == "") { // first command
                 cmdQ.push(new Bin(temp));
-                buffer = vToken.at(i);
                 temp.clear();
             }
-            if (buffer != "") {
-                unsigned offset = 0;
-                for (unsigned j = i+1; j < vToken.size(); ++j) {    // Search for next connector
-                    if (!(vToken.at(j) == "||" || vToken.at(j) == "&&" || vToken.at(j) == ";")) {
-                        temp.push_back(vToken.at(j));
-                        offset++;
-                    }
-                    else {
-                        break;
-                    }
-                }
-                
-                if (vToken.at(i) == "||") {                     // Or case
-                    cmdQ.push(new Or(new Bin(temp)));
-                    buffer = "||";
-                }
-                else if (vToken.at(i) == "&&") {                // And case
-                    cmdQ.push(new And(new Bin(temp)));
-                    buffer = "&&";
-                } 
-                else if (vToken.at(i) == ";") {                 // Semicolon case
-                    cmdQ.push(new Semicolon(new Bin(temp)));
-                    buffer = ";";
-                }
-                i += offset;
+            else if (buffer == "&&") {  // command after and
+                cmdQ.push(new And(new Bin(temp)));
+                temp.clear();
             }
+            else if (buffer == "||") {  // command after or
+                cmdQ.push(new Or(new Bin(temp)));
+                temp.clear();
+            }
+            else if (buffer == ";") {   // command after semicolon
+                cmdQ.push(new Semicolon(new Bin(temp)));
+                temp.clear();
+            }
+            buffer = vToken.at(i);
         }
-        
-        if (buffer != "") {
-            temp.clear();
+        else {
+            if (vToken.at(i) == "\"" && isQuote == false) { // if command is in the quote
+                isQuote = true;
+            }
+            else if (vToken.at(i) == "\"" && isQuote == true) { // quote ends
+                isQuote = false;
+            }
+            else {
+                temp.push_back(vToken.at(i));
+            }
+            
         }
     }
-    
-    if (buffer == "" && !temp.empty()) {
+    if (buffer == "" && !temp.empty()) { // single command
         cmdQ.push(new Bin(temp));
+        temp.clear();
+    }
+    if (!temp.empty()) {    // last command
+        if (buffer == "&&") {
+            cmdQ.push(new And(new Bin(temp)));
+        }
+        else if (buffer == "||") {
+            cmdQ.push(new Or(new Bin(temp)));
+        }
+        else if (buffer == ";") {
+            cmdQ.push(new Semicolon(new Bin(temp)));
+        }
+        temp.clear();
     }
 }

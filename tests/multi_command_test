@@ -1,11 +1,12 @@
-echo A && echo B
-echo A || echo B
-echo A; echo B
-ls -m && echo A
-ls -m || echo A
-ls -m; echo A
-ls -m && echo A || echo B
-echo A || echo B || echo C
-echo A || echo B && echo C
-echo A && echo B && echo C  # print A, B, C
+echo 123 && echo 312
+echo 123 || echo 321
+echo 123; echo 312;
+ls -m && echo "123";
+ls -m || echo 321
+ls -m; echo A;
+ls -m && echo 312 || echo 123
+echo "A" || echo B || echo 312
+echo "A || echo B" || echo 312
+echo A || echo B && echo 312;
+echo A && echo d && echo 123
 exit
