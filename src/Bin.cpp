@@ -4,11 +4,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <stdlib.h>
 #include <vector>
 #include <string>
 using std::vector;
 using std::string;
+using std::cout;
+using std::endl;
 
     
 void Bin::execute() {
@@ -16,8 +19,58 @@ void Bin::execute() {
         status = 0;
         return;
     }
-    if (argsVec.at(0) == "exit") {  // exit command
+    if (argsVec.front() == "exit") {  // exit command
         exit(0);
+    }
+    if (argsVec.front() == "test" || argsVec.front() == "[") {  // test command
+        char* path_char;
+        bool is_flag = true;
+        
+        // Check if the input is valid
+        if (argsVec.front() == "[" && argsVec.back() == "]") {
+            if (argsVec.size() == 3) {
+                is_flag = false;
+                path_char = (char*)argsVec.at(1).c_str();
+            }
+            else if (argsVec.size() == 4 && (argsVec.at(1) == "-e" || argsVec.at(1) == "-f" || argsVec.at(1) == "-d")) {
+                path_char = (char*)argsVec.at(2).c_str();
+            }
+        }
+        else if (argsVec.front() == "test" && argsVec.size() == 3 && (argsVec.at(1) == "-e" || argsVec.at(1) == "-f" || argsVec.at(1) == "-d")) {
+            path_char = (char*)argsVec.at(2).c_str();
+        }
+        else {
+            status = -1;
+            cout << "error: invalid input" << endl;
+            return;
+        }
+        // Perform stat() command
+        struct stat buf;
+       // cout << "start" << endl;
+        if (stat(path_char, &buf) == 0) {
+            if (argsVec.at(1) == "-e" || !is_flag) {
+                status = 1;
+                cout << "(true)" << endl;
+            }
+            else if (S_ISREG(buf.st_mode) != 0 && argsVec.at(1) == "-f") {
+                status = 1;
+                cout << "(true)" << endl; 
+            }
+            else if (S_ISDIR(buf.st_mode) != 0 && argsVec.at(1) == "-d") {
+                status = 1;
+                cout << "(true)" << endl;
+            }
+            else {
+                status = -1;
+                cout << "(false)" << endl;
+            }
+        }
+        else {
+            status = -1;
+            cout << "(false)" << endl;
+        }
+       // cout << "end" << endl;
+        return;
     }
     
     status = 1;
