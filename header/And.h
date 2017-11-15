@@ -4,7 +4,7 @@
 
 class And : public Connector {
   public:
-    And(ShellComponent* left, ShellComponent* right) : Connector(left, right) {}
+    And() : Connector() {}
     ~And() {
         if (next != 0) {
             delete next;

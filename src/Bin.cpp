@@ -46,17 +46,16 @@ void Bin::execute() {
         }
         // Perform stat() command
         struct stat buf;
-       // cout << "start" << endl;
         if (stat(path_char, &buf) == 0) {
-            if (argsVec.at(1) == "-e" || !is_flag) {
+            if (argsVec.at(1) == "-e" || !is_flag) {    // check file existance
                 status = 1;
                 cout << "(true)" << endl;
             }
-            else if (S_ISREG(buf.st_mode) != 0 && argsVec.at(1) == "-f") {
+            else if (S_ISREG(buf.st_mode) != 0 && argsVec.at(1) == "-f") {  // check regular file
                 status = 1;
                 cout << "(true)" << endl; 
             }
-            else if (S_ISDIR(buf.st_mode) != 0 && argsVec.at(1) == "-d") {
+            else if (S_ISDIR(buf.st_mode) != 0 && argsVec.at(1) == "-d") {  // check directory
                 status = 1;
                 cout << "(true)" << endl;
             }
@@ -69,10 +68,10 @@ void Bin::execute() {
             status = -1;
             cout << "(false)" << endl;
         }
-       // cout << "end" << endl;
         return;
     }
     
+    // Regular bin command
     status = 1;
     vector<char*> args;
     args.resize(argsVec.size()+1);
@@ -90,8 +89,6 @@ void Bin::execute() {
         exit(1);
     }
     if (pid == 0) {     // child process
-        //cout << "child: " << pid << endl;
-        //cout << endl << argsVec.at(0) << ": " << endl;
         if (execvp(args[0], args.data()) == -1) {
             perror("exec");
             exit(1);
@@ -110,6 +107,5 @@ void Bin::execute() {
         else if (WEXITSTATUS(flag) == 1) {  // execute failed
             status = -1;
         }
-        //cout << "parent: " << pid << endl;
     }
 }

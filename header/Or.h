@@ -4,7 +4,7 @@
 
 class Or : public Connector {
   public:
-    Or(ShellComponent* left, ShellComponent* right) : Connector(left, right) {}
+    Or() : Connector() {}
     ~Or() {
         if (next != 0) {
             delete next;

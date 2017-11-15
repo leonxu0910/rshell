@@ -5,32 +5,44 @@
 #include "../header/Semicolon.h"
 #include <string>
 #include <vector>
+#include <stack>
 #include <cstring>
 #include <iostream>
 
 using std::string;
 using std::vector;
-using std::queue;
 using std::cout;
 using std::endl;
+using std::stack;
+
+int getPrecedence(vector<string> str);
+bool isOperator(string str);
 
 ExecShell::ExecShell() {
     shellTree = 0;
 }
 ExecShell::~ExecShell() {
-    delete shellTree;
-    shellTree = 0;
+    if (shellTree != 0) {
+        delete shellTree;
+        shellTree = 0;
+    }
 }
 
 void ExecShell::execute(string userInput) {
     this->parseLine(userInput);
     
-    shellTree->execute();
-    delete shellTree;
-    shellTree = 0;
+    if (shellTree != 0) {
+        shellTree->execute();
+        delete shellTree;
+        shellTree = 0;
+    }
 }
 
 void ExecShell::parseLine(string userInput) {
+    if (userInput == "") {
+        return;
+    }
+    
     vector<string> vToken;
     std::size_t findComment = userInput.find("#");
     
@@ -82,74 +94,27 @@ void ExecShell::parseLine(string userInput) {
     // Insert shell command from vector to queue
     vector<vector<string> > shellVec;
     vector<string> temp;
-    vector<string> temp_cnt;
-    string buffer = "";
-    bool isQuote = false;
     for (unsigned i = 0; i < vToken.size(); i++) {
-        if (isQuote == false && (vToken.at(i) == "||" || vToken.at(i) == "&&" || vToken.at(i) == ";")) {
-            if (buffer == "") { // first command
-                shellVec.push_back(temp);
-                temp.clear();
+        if (!isOperator(vToken.at(i))) {
+            temp.push_back(vToken.at(i));
+            if (i+1 < vToken.size()) {
+                if (isOperator(vToken.at(i+1))) {
+                    shellVec.push_back(temp);
+                }
             }
             else {
-                if (buffer == "&&") {  // command after and
-                    temp_cnt.push_back("&&");
-                }
-                else if (buffer == "||") {  // command after or
-                    temp_cnt.push_back("||");
-                }
-                else if (buffer == ";") {   // command after semicolon
-                    temp_cnt.push_back(";");
-                }
-                shellVec.push_back(temp_cnt);
                 shellVec.push_back(temp);
-                temp_cnt.clear();
-                temp.clear();
             }
-            buffer = vToken.at(i);
         }
         else {
-            if (vToken.at(i) == "\"" && isQuote == false) { // if command is in the quote
-                isQuote = true;
-            }
-            else if (vToken.at(i) == "\"" && isQuote == true) { // quote ends
-                isQuote = false;
-            }
-            else {
-                temp.push_back(vToken.at(i));
-            }
-            
+            temp.clear();
+            temp.push_back(vToken.at(i));
+            shellVec.push_back(temp);
+            temp.clear();
         }
     }
-    if (buffer == "" && !temp.empty()) { // single command
-        shellVec.push_back(temp);
-        temp.clear();
-    }
-    if (!temp.empty()) {    // last command
-        if (buffer == "&&") {
-            temp_cnt.push_back("&&");
-        }
-        else if (buffer == "||") {
-            temp_cnt.push_back("||");
-        }
-        else if (buffer == ";") {
-            temp_cnt.push_back(";");
-        }
-        shellVec.push_back(temp_cnt);
-        shellVec.push_back(temp);
-        temp.clear();
-    }
-    if (vToken.at(vToken.size()-1) == "&&") {
-        temp_cnt.push_back("&&");
-        shellVec.push_back(temp_cnt);
-    }
-    else if (vToken.at(vToken.size()-1) == "||") {
-        temp_cnt.push_back("||");
-        shellVec.push_back(temp_cnt);
-    }
-    else if (vToken.at(vToken.size()-1) == ";") {
-        temp_cnt.push_back(";");
-        shellVec.push_back(temp_cnt);
+    if (shellVec.back().at(0) == ";") {
+        shellVec.pop_back();
     }
     
     // test
@@ -159,64 +124,112 @@ void ExecShell::parseLine(string userInput) {
     //     }
     //     cout << endl;
     // }
+    // cout << "----------------------------------- " << endl;
     
-    Bin* bin = 0;
-    Connector* cnt = 0;
-    Connector* root = 0;
-    string cnt_tok = "";
-    if (shellVec.size() == 1) {
-        shellTree = new Bin(shellVec.at(0));
-        return;
-    }
-    else {
-        for (unsigned i = 0; i < shellVec.size(); i++) {
-            if (i == 0) {
-                bin = new Bin(shellVec.at(i));
-            }
-            else {
-                if (bin != 0) {
-                    if (shellVec.at(i).at(0) == "&&") {
-                        cnt = new And(bin, 0);
-                        cnt_tok = "&&";
-                    }
-                    else if (shellVec.at(i).at(0) == "||") {
-                        cnt = new Or(bin, 0);
-                        cnt_tok = "||";
-                    }
-                    else if (shellVec.at(i).at(0) == ";") {
-                        cnt = new Semicolon(bin, 0);
-                        cnt_tok = ";";
-                    }
-                    root = cnt;
-                    cnt = 0;
-                    bin = 0;
-                }
-                else if (cnt_tok != "") {
-                    root->setRight(new Bin(shellVec.at(i)));
-                    cnt_tok = "";
-                }
-                else {
-                    if (shellVec.at(i).at(0) == "&&") {
-                        cnt = new And(root, 0);
-                        cnt_tok = "&&";
-                    }
-                    else if (shellVec.at(i).at(0) == "||") {
-                        cnt = new Or(root, 0);
-                        cnt_tok = "||";
-                    }
-                    else if (shellVec.at(i).at(0) == ";") {
-                        cnt = new Semicolon(root, 0);
-                        cnt_tok = ";";
-                    }
-                    root = cnt;
-                    cnt = 0;
-                }
-                
+    shellVec = infixToPostfix(shellVec);
+    
+    //test
+    // for (unsigned i = 0; i < shellVec.size(); i++) {
+    //     for (unsigned j = 0; j < shellVec.at(i).size(); j++) {
+    //         cout << shellVec.at(i).at(j) << " ";
+    //     }
+    //     cout << endl;
+    // }
+    // cout << "----------------------------------- " << endl;
+    
+    buildTree(shellVec);
+}
+
+vector<vector<string> > ExecShell::infixToPostfix(vector<vector<string> > shellVec) {
+    stack<vector<string> > cntStack;
+    vector<vector<string> > postfix;
+    for (unsigned i = 0; i < shellVec.size(); i++) {
+        if (!isOperator(shellVec.at(i).front())) {
+            postfix.push_back(shellVec.at(i));
+        }
+        else if (shellVec.at(i).front() == "(") {
+            cntStack.push(shellVec.at(i));
+        }
+        else if (shellVec.at(i).front() == ")") {
+            vector<string> topVal = cntStack.top();
+            cntStack.pop();
+            while (topVal.front() != "(") {
+                postfix.push_back(topVal);
+                topVal = cntStack.top();
+                cntStack.pop();
             }
         }
-        shellTree = root;
-        root = 0;
-        cnt = 0;
-        bin = 0;
+        else {
+            while (!cntStack.empty() && (getPrecedence(cntStack.top()) >= getPrecedence(shellVec.at(i)))) {
+                postfix.push_back(cntStack.top());
+                cntStack.pop();
+            }
+            cntStack.push(shellVec.at(i));
+        }
+    }
+    while (!cntStack.empty()) {
+        postfix.push_back(cntStack.top());
+        cntStack.pop();
+    }
+    
+    return postfix;
+    
+}
+
+void ExecShell::buildTree(std::vector<std::vector<std::string> > shellList) {
+    stack<ShellComponent*> shellStack;
+    for (unsigned i = 0; i < shellList.size(); i++) {
+        if (!isOperator(shellList.at(i).front())) {
+            shellStack.push(new Bin(shellList.at(i)));
+        }
+        else {
+            Connector* op = 0;
+            if (shellList.at(i).front() == "&&") {
+                op = new And();
+            }
+            else if (shellList.at(i).front() == "||") {
+                op = new Or();
+            }
+            else if (shellList.at(i).front() == ";") {
+                op = new Semicolon();
+            }
+            if (!shellStack.empty()) {
+                op->setRight(shellStack.top());
+                shellStack.pop();
+            }
+            if (!shellStack.empty()) {
+                op->setLeft(shellStack.top());
+                shellStack.pop();
+            }
+            shellStack.push(op);
+        }
+    }
+    if (!shellStack.empty()) {
+        shellTree = shellStack.top();
+        shellStack.pop();
+    }
+}
+
+int getPrecedence(vector<string> str) {
+    if (str.empty()) {
+        return 0;
+    }
+    if (str.front() == "(") {
+        return 1;
+    }
+    else if (str.front() == "&&" || str.front() == "||" || str.front() == ";") {
+        return 2;
+    }
+    else {
+        return 0;
+    }
+}
+
+bool isOperator(string str) {
+    if (str == "||" || str == "&&" || str == ";" || str == "(" || str == ")") {
+        return true;
+    }
+    else {
+        return false;
     }
 }
