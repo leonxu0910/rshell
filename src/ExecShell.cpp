@@ -17,6 +17,7 @@ using std::stack;
 
 int getPrecedence(vector<string> str);
 bool isOperator(string str);
+bool isCharOperator(char c);
 
 ExecShell::ExecShell() {
     shellTree = 0;
@@ -44,60 +45,77 @@ void ExecShell::parseLine(string userInput) {
     }
     
     vector<string> vToken;
-    std::size_t findComment = userInput.find("#");
-    
-    // Ignore everything after comment sign
-    if (findComment != string::npos) {
-        userInput = userInput.substr(0, findComment);
+    string tok = "";
+    bool isQuote = false;
+    for (unsigned i = 0; i < userInput.size(); i++) {
+        if (userInput.at(i) == '#' && !isQuote) {
+            //cout << "-------------1------------" << endl;
+            break;
+        }
+        else if (userInput.at(i) == ' ' && !isQuote) {
+            //cout << "-------------2------------" << endl;
+            
+        }
+        else if (userInput.at(i) == '\"') {
+            //cout << "-------------3------------" << endl;
+            string temp;
+            temp.push_back('\"');
+            vToken.push_back(temp);
+            if (isQuote) {
+                isQuote = false;
+            }
+            else {
+                isQuote = true;
+            }
+        }
+        else if (isCharOperator(userInput.at(i)) && !isQuote) {
+            //cout << "-------------4------------" << endl;
+            if (userInput.at(i) == '&') {
+                if (i+1 < userInput.size()) {
+                    if (userInput.at(i+1) == '&') {
+                        vToken.push_back("&&");
+                        i++;
+                    }
+                }
+            }
+            else if (userInput.at(i) == '|') {
+                if (i+1 < userInput.size()) {
+                    if (userInput.at(i+1) == '|') {
+                        vToken.push_back("||");
+                        i++;
+                    }
+                }
+            }
+            else {
+                string temp;
+                temp.push_back(userInput.at(i));
+                vToken.push_back(temp);
+            }
+        }
+        else if (isQuote) {
+            //cout << "-------------5------------" << endl;
+            tok.push_back(userInput.at(i));
+            if (i+1 < userInput.size() && userInput.at(i+1) == '\"') {
+                vToken.push_back(tok);
+                tok = "";
+            }
+        }
+        else {
+            //cout << "-------------6------------" << endl;
+            tok.push_back(userInput.at(i));
+            if (i+1 == userInput.size()) {
+                vToken.push_back(tok);
+            }
+            else {
+                if (i+1 < userInput.size()) {
+                    if (isCharOperator(userInput.at(i+1))) {
+                        vToken.push_back(tok);
+                        tok = "";
+                    }
+                }
+            }
+        }
     }
-    
-    char* cstr = new char [userInput.length() + 1];
-    cstr = strcpy(cstr, userInput.c_str());
-    char* tok = strtok(cstr, " ");
-    
-    // Add tokens to vector
-    while (tok != NULL) {
-        string element = tok;
-        string semiColon = "";
-        string quote = "";
-        string parantheses = "";
-        if (element.at(element.size()-1) == ';') {
-            element = element.substr(0, element.size()-1);
-            semiColon = ";";
-        }
-        if(element.at(0) == '(') {
-            element = element.substr(1, element.size());
-            vToken.push_back("(");
-        }
-        
-        if (element.at(element.size()-1) == ')') {
-            element = element.substr(0, element.size()-1);
-            parantheses = ")";
-        }
-        
-        if (element.at(0) == '\"') {
-            element = element.substr(1, element.size());
-            vToken.push_back("\"");
-        }
-        if (element.at(element.size()-1) == '\"') {
-            element = element.substr(0, element.size()-1);
-            quote = "\"";
-        }
-        vToken.push_back(element);
-        if (parantheses == ")") {
-            vToken.push_back(parantheses);
-        }
-        if (quote == "\"") {
-            vToken.push_back(quote);
-        }
-        if (semiColon == ";") {
-            vToken.push_back(semiColon);
-        }
-        tok = strtok(NULL, " ");
-    }
-    delete[] cstr;
-    cstr = 0;
-    tok = 0;
     
     // test
     // for(unsigned i = 0; i < vToken.size(); ++i) {
@@ -256,6 +274,15 @@ int getPrecedence(vector<string> str) {
 
 bool isOperator(string str) {
     if (str == "||" || str == "&&" || str == ";" || str == "(" || str == ")") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool isCharOperator(char c) {
+    if (c == '\"' || c == ' ' || c == '&' || c == '|' || c == ';' || c == '(' || c == ')' || c == '[' || c == ']') {
         return true;
     }
     else {
