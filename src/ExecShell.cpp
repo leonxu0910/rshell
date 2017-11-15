@@ -18,6 +18,8 @@ using std::stack;
 int getPrecedence(vector<string> str);
 bool isOperator(string str);
 
+
+
 ExecShell::ExecShell() {
     shellTree = 0;
 }
@@ -38,6 +40,76 @@ void ExecShell::execute(string userInput) {
     }
 }
 
+int ExecShell::quoteCounter(string test, string keyword) {
+    int numQuotes = 0;
+    char quote = '\"';
+    if(keyword == "front") {
+        while(test.at(0) == quote) {
+            ++numQuotes;
+            test = test.substr(1, test.size());
+        }
+        return numQuotes;
+    }
+    else if(keyword == "back") {
+        while(test.at(test.size()-1) == quote) {
+            ++numQuotes;
+            test = test.substr(0, test.size()-1);
+        }
+        return numQuotes;
+    }
+    else {
+        return -1;
+    }
+}
+
+int ExecShell::paranthesesCounter(string test, string keyword) {
+    int numParantheses = 0;
+    char frontParantheses = '(';
+    char backParantheses = ')';
+    if(keyword == "front") {
+        while(test.at(0) == frontParantheses) {
+            ++numParantheses;
+            test = test.substr(1, test.size());
+        }
+        return numParantheses;
+    }
+    else if(keyword == "back") {
+        while(test.at(test.size()-1) == backParantheses) {
+            ++numParantheses;
+            test = test.substr(0, test.size()-1);
+        }
+        return numParantheses;
+    }
+    else {
+        return -1;
+    }
+}
+
+int ExecShell::bracketCounter(string test, string keyword) {
+    int numBracket = 0;
+    char frontBracket = '[';
+    char backBracket = ']';
+    if(keyword == "front") {
+        while(test.at(0) == frontBracket) {
+            ++numBracket;
+            test = test.substr(1, test.size());
+        }
+        return numBracket;
+    }
+    else if(keyword == "back") {
+        while(test.at(test.size()-1) == backBracket) {
+            ++numBracket;
+            test = test.substr(0, test.size()-1);
+        }
+        return numBracket;
+    }
+    else {
+        return -1;
+    }
+}
+
+
+
 void ExecShell::parseLine(string userInput) {
     if (userInput == "") {  // empty input, dont do anything
         return;
@@ -51,6 +123,35 @@ void ExecShell::parseLine(string userInput) {
         userInput = userInput.substr(0, findComment);
     }
     
+    int frontCheck = 0;
+    int backCheck = 0;
+    if(userInput.find('\"') != string::npos) {
+        frontCheck = quoteCounter(userInput, "front");
+        backCheck = quoteCounter(userInput, "back");
+        if(frontCheck != backCheck) {
+            cout << "Error: Incorrect number of quotes." << endl;
+            return;
+        }
+    }
+    
+    if(userInput.find('(') != string::npos || userInput.find(')') != string::npos) {
+        frontCheck= paranthesesCounter(userInput, "front");
+        backCheck= paranthesesCounter(userInput, "back");
+        if(frontCheck != backCheck) {
+            cout << "Error: Incorrect number of parantheses." << endl;
+            return;
+        }
+    }
+    
+    if(userInput.find('[') != string::npos || userInput.find(']') != string::npos) {
+        frontCheck = bracketCounter(userInput, "front");
+        backCheck = bracketCounter(userInput, "back");
+        if(frontCheck != backCheck) {
+            cout << "Error: Incorrect number of brackets." << endl;
+            return;
+        }
+    }
+    
     char* cstr = new char [userInput.length() + 1];
     cstr = strcpy(cstr, userInput.c_str());
     char* tok = strtok(cstr, " ");
@@ -61,6 +162,7 @@ void ExecShell::parseLine(string userInput) {
         string semiColon = "";
         string quote = "";
         string parantheses = "";
+        
         if (element.at(element.size()-1) == ';') {
             element = element.substr(0, element.size()-1);
             semiColon = ";";

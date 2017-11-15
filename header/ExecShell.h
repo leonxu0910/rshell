@@ -34,6 +34,22 @@ class ExecShell {
     void buildTree(std::vector<std::vector<std::string> >);
     
     
+    /*
+      Count number of quotes (front or back) in command and return amount to check for errors
+    */
+    
+    int quoteCounter(std::string test, std::string keyword);
+
+    /*
+      Count number of parantheses (front or back) in command and return amount to check for errors
+    */
+    int paranthesesCounter(std::string test, std::string keyword);
+
+    /*
+      Count number of brackets (front or back) in command and return amount to check for errors
+    */
+    int bracketCounter(std::string test, std::string keyword);
+    
 };
 
 #endif
