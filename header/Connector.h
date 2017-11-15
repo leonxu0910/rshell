@@ -8,9 +8,9 @@ class Connector : public ShellComponent {
     ShellComponent* next; // the command following the connector
     
   public:
-    Connector(ShellComponent* left = 0, ShellComponent* right = 0) : ShellComponent() {
-        this->prev = left;
-        this->next = right;
+    Connector() : ShellComponent() {
+        this->prev = 0;
+        this->next = 0;
         status = -1;
     }
     void setLeft(ShellComponent* left) {
@@ -23,7 +23,7 @@ class Connector : public ShellComponent {
         return prev;
     }
     ShellComponent* getRight() const {
-         return next;
+        return next;
     }
     virtual ~Connector() {}
     virtual void execute() = 0;
