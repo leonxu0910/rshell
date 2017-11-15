@@ -60,10 +60,21 @@ void ExecShell::parseLine(string userInput) {
         string element = tok;
         string semiColon = "";
         string quote = "";
+        string parantheses = "";
         if (element.at(element.size()-1) == ';') {
             element = element.substr(0, element.size()-1);
             semiColon = ";";
         }
+        if(element.at(0) == '(') {
+            element = element.substr(1, element.size());
+            vToken.push_back("(");
+        }
+        
+        if (element.at(element.size()-1) == ')') {
+            element = element.substr(0, element.size()-1);
+            parantheses = ")";
+        }
+        
         if (element.at(0) == '\"') {
             element = element.substr(1, element.size());
             vToken.push_back("\"");
@@ -73,6 +84,9 @@ void ExecShell::parseLine(string userInput) {
             quote = "\"";
         }
         vToken.push_back(element);
+        if (parantheses == ")") {
+            vToken.push_back(parantheses);
+        }
         if (quote == "\"") {
             vToken.push_back(quote);
         }
