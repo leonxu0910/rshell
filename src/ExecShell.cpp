@@ -15,10 +15,6 @@ using std::cout;
 using std::endl;
 using std::stack;
 
-int getPrecedence(vector<string> str);
-bool isOperator(string str);
-bool isCharOperator(char c);
-
 ExecShell::ExecShell() {
     shellTree = 0;
 }
@@ -39,8 +35,23 @@ void ExecShell::execute(string userInput) {
     }
 }
 
+
 void ExecShell::parseLine(string userInput) {
     if (userInput == "") {  // empty input, dont do anything
+        return;
+    }
+    
+    // Check number of parentheses, quotes and brackets
+    if(!paranthesesCheck(userInput)) {
+        cout << "Error: Unbalanced number of parantheses." << endl;
+        return;
+    }
+    else if (!bracketCheck(userInput)) {
+        cout << "Error: Unbalanced number of brackets." << endl;
+        return;
+    }
+    else if (!quoteCheck(userInput)) {
+        cout << "Error: Unbalanced number of quotes." << endl;
         return;
     }
     
@@ -257,7 +268,60 @@ void ExecShell::buildTree(std::vector<std::vector<std::string> > shellList) {
     }
 }
 
-int getPrecedence(vector<string> str) {
+bool ExecShell::quoteCheck(string test) {
+    int numQuotes = 0;
+    for(unsigned i = 0; i < test.size(); ++i) {
+        if(test.at(i) == '\"') {
+            ++numQuotes;
+        }
+    }
+    if(numQuotes % 2 != 0) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+bool ExecShell::paranthesesCheck(string test) {
+    int numFrontP = 0;
+    int numBackP = 0;
+    for(unsigned i = 0; i < test.size(); ++i) {
+        if(test.at(i) == '(') {
+            ++numFrontP;
+        }
+        else if(test.at(i) == ')') {
+            ++numBackP;
+        }
+    }
+    if(numFrontP == numBackP) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool ExecShell::bracketCheck(string test) {
+    int numFrontB = 0;
+    int numBackB = 0;
+    for(unsigned i = 0; i < test.size(); ++i) {
+        if(test.at(i) == '[') {
+            ++numFrontB;
+        }
+        else if(test.at(i) == ']') {
+            ++numBackB;
+        }
+    }
+    if(numFrontB == numBackB) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+int ExecShell::getPrecedence(vector<string> str) {
     if (str.empty()) {
         return 0;
     }
@@ -272,7 +336,7 @@ int getPrecedence(vector<string> str) {
     }
 }
 
-bool isOperator(string str) {
+bool ExecShell::isOperator(string str) {
     if (str == "||" || str == "&&" || str == ";" || str == "(" || str == ")") {
         return true;
     }
@@ -281,7 +345,7 @@ bool isOperator(string str) {
     }
 }
 
-bool isCharOperator(char c) {
+bool ExecShell::isCharOperator(char c) {
     if (c == '\"' || c == ' ' || c == '&' || c == '|' || c == ';' || c == '(' || c == ')' || c == '[' || c == ']') {
         return true;
     }
