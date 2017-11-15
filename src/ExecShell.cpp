@@ -40,71 +40,56 @@ void ExecShell::execute(string userInput) {
     }
 }
 
-int ExecShell::quoteCounter(string test, string keyword) {
+bool ExecShell::quoteCheck(string test) {
     int numQuotes = 0;
-    char quote = '\"';
-    if(keyword == "front") {
-        while(test.at(0) == quote) {
+    for(unsigned i = 0; i < test.size(); ++i) {
+        if(test.at(i) == '\"') {
             ++numQuotes;
-            test = test.substr(1, test.size());
         }
-        return numQuotes;
     }
-    else if(keyword == "back") {
-        while(test.at(test.size()-1) == quote) {
-            ++numQuotes;
-            test = test.substr(0, test.size()-1);
-        }
-        return numQuotes;
+    if(numQuotes % 2 != 0) {
+        return false;
     }
     else {
-        return -1;
+        return true;
     }
 }
 
-int ExecShell::paranthesesCounter(string test, string keyword) {
-    int numParantheses = 0;
-    char frontParantheses = '(';
-    char backParantheses = ')';
-    if(keyword == "front") {
-        while(test.at(0) == frontParantheses) {
-            ++numParantheses;
-            test = test.substr(1, test.size());
+bool ExecShell::paranthesesCheck(string test) {
+    int numFrontP = 0;
+    int numBackP = 0;
+    for(unsigned i = 0; i < test.size(); ++i) {
+        if(test.at(i) == '(') {
+            ++numFrontP;
         }
-        return numParantheses;
+        else if(test.at(i) == ')') {
+            ++numBackP;
+        }
     }
-    else if(keyword == "back") {
-        while(test.at(test.size()-1) == backParantheses) {
-            ++numParantheses;
-            test = test.substr(0, test.size()-1);
-        }
-        return numParantheses;
+    if(numFrontP == numBackP) {
+        return true;
     }
     else {
-        return -1;
+        return false;
     }
 }
 
-int ExecShell::bracketCounter(string test, string keyword) {
-    int numBracket = 0;
-    char frontBracket = '[';
-    char backBracket = ']';
-    if(keyword == "front") {
-        while(test.at(0) == frontBracket) {
-            ++numBracket;
-            test = test.substr(1, test.size());
+bool ExecShell::bracketCheck(string test) {
+    int numFrontB = 0;
+    int numBackB = 0;
+    for(unsigned i = 0; i < test.size(); ++i) {
+        if(test.at(i) == '[') {
+            ++numFrontB;
         }
-        return numBracket;
+        else if(test.at(i) == ']') {
+            ++numBackB;
+        }
     }
-    else if(keyword == "back") {
-        while(test.at(test.size()-1) == backBracket) {
-            ++numBracket;
-            test = test.substr(0, test.size()-1);
-        }
-        return numBracket;
+    if(numFrontB == numBackB) {
+        return true;
     }
     else {
-        return -1;
+        return false;
     }
 }
 
@@ -122,34 +107,17 @@ void ExecShell::parseLine(string userInput) {
     if (findComment != string::npos) {
         userInput = userInput.substr(0, findComment);
     }
-    
-    int frontCheck = 0;
-    int backCheck = 0;
-    if(userInput.find('\"') != string::npos) {
-        frontCheck = quoteCounter(userInput, "front");
-        backCheck = quoteCounter(userInput, "back");
-        if(frontCheck != backCheck) {
-            cout << "Error: Incorrect number of quotes." << endl;
-            return;
-        }
+    if(!paranthesesCheck(userInput)) {
+        cout << "Error: Unbalanced number of parantheses." << endl;
+        return;
     }
-    
-    if(userInput.find('(') != string::npos || userInput.find(')') != string::npos) {
-        frontCheck= paranthesesCounter(userInput, "front");
-        backCheck= paranthesesCounter(userInput, "back");
-        if(frontCheck != backCheck) {
-            cout << "Error: Incorrect number of parantheses." << endl;
-            return;
-        }
+    else if (!bracketCheck(userInput)) {
+        cout << "Error: Unbalanced number of brackets." << endl;
+        return;
     }
-    
-    if(userInput.find('[') != string::npos || userInput.find(']') != string::npos) {
-        frontCheck = bracketCounter(userInput, "front");
-        backCheck = bracketCounter(userInput, "back");
-        if(frontCheck != backCheck) {
-            cout << "Error: Incorrect number of brackets." << endl;
-            return;
-        }
+    else if (!quoteCheck(userInput)) {
+        cout << "Error: Unbalanced number of quotes." << endl;
+        return;
     }
     
     char* cstr = new char [userInput.length() + 1];

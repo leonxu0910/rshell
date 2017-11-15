@@ -35,20 +35,23 @@ class ExecShell {
     
     
     /*
-      Count number of quotes (front or back) in command and return amount to check for errors
+      Count number of quotes in command and return true if there are a balanced
+      (even) number of quotes and false if not.
     */
     
-    int quoteCounter(std::string test, std::string keyword);
+    bool quoteCheck(std::string);
 
     /*
-      Count number of parantheses (front or back) in command and return amount to check for errors
+      Count number of parantheses in command and return true if there a balanced
+      (even) number of parantheses and false if not.
     */
-    int paranthesesCounter(std::string test, std::string keyword);
+    bool paranthesesCheck(std::string);
 
     /*
-      Count number of brackets (front or back) in command and return amount to check for errors
+      Count number of brackets in command and return true if there are a balanced
+      (even) number of brackets and false if not.
     */
-    int bracketCounter(std::string test, std::string keyword);
+    bool bracketCheck(std::string);
     
 };
 
