@@ -39,7 +39,7 @@ void ExecShell::execute(string userInput) {
 }
 
 void ExecShell::parseLine(string userInput) {
-    if (userInput == "") {
+    if (userInput == "") {  // empty input, dont do anything
         return;
     }
     
@@ -108,30 +108,45 @@ void ExecShell::parseLine(string userInput) {
     // Insert shell command from vector to queue
     vector<vector<string> > shellVec;
     vector<string> temp;
+    bool is_quote = false;
     for (unsigned i = 0; i < vToken.size(); i++) {
-        if (!isOperator(vToken.at(i))) {
+        if (vToken.at(i) == "\"") {
+            if (is_quote) {
+                is_quote = false;
+                shellVec.push_back(temp);
+            }
+            else {
+                is_quote = true;
+            }
+        }
+        else if (is_quote) {
             temp.push_back(vToken.at(i));
-            if (i+1 < vToken.size()) {
-                if (isOperator(vToken.at(i+1))) {
+        }
+        else if (!is_quote) {
+            if (!isOperator(vToken.at(i))) {
+                temp.push_back(vToken.at(i));
+                if (i+1 < vToken.size()) {
+                    if (isOperator(vToken.at(i+1))) {
+                        shellVec.push_back(temp);
+                    }
+                }
+                else {
                     shellVec.push_back(temp);
                 }
             }
             else {
+                temp.clear();
+                temp.push_back(vToken.at(i));
                 shellVec.push_back(temp);
+                temp.clear();
             }
-        }
-        else {
-            temp.clear();
-            temp.push_back(vToken.at(i));
-            shellVec.push_back(temp);
-            temp.clear();
         }
     }
     if (shellVec.back().at(0) == ";") {
         shellVec.pop_back();
     }
     
-    // test
+    //test
     // for (unsigned i = 0; i < shellVec.size(); i++) {
     //     for (unsigned j = 0; j < shellVec.at(i).size(); j++) {
     //         cout << shellVec.at(i).at(j) << " ";
