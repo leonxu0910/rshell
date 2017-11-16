@@ -22,20 +22,6 @@ void Bin::execute() {
     if (argsVec.front() == "exit") {  // exit command
         exit(0);
     }
-    if (argsVec.front().front() == '[' && argsVec.back().back() == ']') {
-        vector<string> newArgs;
-        argsVec.front().erase(0, 1);
-        argsVec.back().pop_back();
-        newArgs.push_back("[");
-        for (unsigned i = 0; i < argsVec.size(); i++) {
-            if (argsVec.at(i) != "") {
-                newArgs.push_back(argsVec.at(i));
-            }
-        }
-        newArgs.push_back("]");
-        argsVec = newArgs;
-        
-    } 
     if (argsVec.front() == "test" || argsVec.front() == "[") {  // test command
         char* path_char;
         bool is_flag = true;
