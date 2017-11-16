@@ -41,20 +41,9 @@ void ExecShell::parseLine(string userInput) {
         return;
     }
     
-    // Check number of parentheses, quotes and brackets
-    if(!paranthesesCheck(userInput)) {
-        cout << "Error: Unbalanced number of parantheses." << endl;
-        return;
-    }
-    else if (!bracketCheck(userInput)) {
-        cout << "Error: Unbalanced number of brackets." << endl;
-        return;
-    }
-    else if (!quoteCheck(userInput)) {
-        cout << "Error: Unbalanced number of quotes." << endl;
-        return;
-    }
-    
+    int fpar = 0;
+    int bpar = 0;
+    int quote = 0;
     vector<string> vToken;
     string tok = "";
     bool isQuote = false;
@@ -78,6 +67,7 @@ void ExecShell::parseLine(string userInput) {
             else {
                 isQuote = true;
             }
+            quote++;
         }
         else if (isCharOperator(userInput.at(i)) && !isQuote) {
             //cout << "-------------4------------" << endl;
@@ -101,6 +91,13 @@ void ExecShell::parseLine(string userInput) {
                 string temp;
                 temp.push_back(userInput.at(i));
                 vToken.push_back(temp);
+            }
+            
+            if (userInput.at(i) == '(') {
+                fpar++;
+            }
+            else if (userInput.at(i) == ')') {
+                bpar++;
             }
         }
         else if (isQuote) {
@@ -128,6 +125,16 @@ void ExecShell::parseLine(string userInput) {
         }
     }
     
+    // Check balance of () and ""
+    if (quote % 2 != 0) {
+        cout << "error: unbalanced number of quotes." << endl;
+        return;
+    }
+    if (fpar != bpar) {
+        cout << "error: unbalanced number of parantheses." << endl;
+        return;
+    }
+    
     // test
     // for(unsigned i = 0; i < vToken.size(); ++i) {
     //     cout << vToken.at(i) << " " << endl;
@@ -142,7 +149,6 @@ void ExecShell::parseLine(string userInput) {
         if (vToken.at(i) == "\"") {
             if (is_quote) {
                 is_quote = false;
-                shellVec.push_back(temp);
             }
             else {
                 is_quote = true;
@@ -150,6 +156,11 @@ void ExecShell::parseLine(string userInput) {
         }
         else if (is_quote) {
             temp.push_back(vToken.at(i));
+            if (i+1 < vToken.size()) {
+                if (vToken.at(i+1) == "\"") {
+                    shellVec.push_back(temp);
+                }
+            }
         }
         else if (!is_quote) {
             if (!isOperator(vToken.at(i))) {
@@ -171,9 +182,13 @@ void ExecShell::parseLine(string userInput) {
             }
         }
     }
-    if (shellVec.back().at(0) == ";") {
+    if (shellVec.size() == 1 && shellVec.front().front() == ";") {
+        cout << "error: invalid input" << endl;
+    }
+    if (!shellVec.empty() && shellVec.back().front() == ";") {
         shellVec.pop_back();
     }
+    
     
     //test
     // for (unsigned i = 0; i < shellVec.size(); i++) {
@@ -268,59 +283,6 @@ void ExecShell::buildTree(std::vector<std::vector<std::string> > shellList) {
     }
 }
 
-bool ExecShell::quoteCheck(string test) {
-    int numQuotes = 0;
-    for(unsigned i = 0; i < test.size(); ++i) {
-        if(test.at(i) == '\"') {
-            ++numQuotes;
-        }
-    }
-    if(numQuotes % 2 != 0) {
-        return false;
-    }
-    else {
-        return true;
-    }
-}
-
-bool ExecShell::paranthesesCheck(string test) {
-    int numFrontP = 0;
-    int numBackP = 0;
-    for(unsigned i = 0; i < test.size(); ++i) {
-        if(test.at(i) == '(') {
-            ++numFrontP;
-        }
-        else if(test.at(i) == ')') {
-            ++numBackP;
-        }
-    }
-    if(numFrontP == numBackP) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-bool ExecShell::bracketCheck(string test) {
-    int numFrontB = 0;
-    int numBackB = 0;
-    for(unsigned i = 0; i < test.size(); ++i) {
-        if(test.at(i) == '[') {
-            ++numFrontB;
-        }
-        else if(test.at(i) == ']') {
-            ++numBackB;
-        }
-    }
-    if(numFrontB == numBackB) {
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
 int ExecShell::getPrecedence(vector<string> str) {
     if (str.empty()) {
         return 0;
@@ -346,7 +308,7 @@ bool ExecShell::isOperator(string str) {
 }
 
 bool ExecShell::isCharOperator(char c) {
-    if (c == '\"' || c == ' ' || c == '&' || c == '|' || c == ';' || c == '(' || c == ')' || c == '[' || c == ']') {
+    if (c == '\"' || c == ' ' || c == '&' || c == '|' || c == ';' || c == '(' || c == ')') {
         return true;
     }
     else {
