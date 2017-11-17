@@ -16,4 +16,5 @@ test -d testdir && echo testdir exists
 test -f testfile.txt && echo testfile.txt exists
 [ -d testdir ] || echo directory testdir does not exist
 test -f testfile.txt || echo file testfile.txt does not exist
+((echo a; test exit.sh) && echo [-f multi_command_test] || echo hello); ((test -d src && echo l) || ls && echo bye) || ([-d ../src] && echo goodbye)
 exit

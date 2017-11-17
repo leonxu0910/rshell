@@ -12,8 +12,8 @@ int main (int argc, char *argv[]) {
         
     } while (1);
     
-    // delete exec;
-    // exec = 0;
+    delete exec;
+    exec = 0;
  
     return 0;
 }
