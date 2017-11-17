@@ -1,3 +1,7 @@
+(echo 123 #echo 321) && echo 456
+echo abc #test -e ../src
+echo bcd && #[-e ../header]
+(echo hello #&& echo hi) && echo bye
 echo 123 #echo 321
 echo 123 #&& 321 wefwe
 echo a && echo 123 #&& echo 345

@@ -1,7 +1,11 @@
-exit # echo 123
-echo A && exit #A
+(echo not exit || exit) && (echo still no exit || exit)
+(test -f ../src && exit) || echo still here 
+((exit)
+echo goodbye && (test -f ../bin || exit)
 echo A || exit #23452345;||
-echo A; exit #A
 echo A #exit #2324356234
+echo A && exit #A
+echo A; exit #A
+exit # echo 123
 exit;
 exit

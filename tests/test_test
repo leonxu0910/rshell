@@ -1,0 +1,19 @@
+test -e test_test.sh
+test -f test_test.sh
+test -d ../src
+test -f ../src
+[-e test_test.sh]
+[-f test_test.sh]
+[-d ../src]
+[-f ../src]
+mkdir testdir
+touch testfile.txt
+test -d testdir && echo testdir exists
+test -f testfile.txt && echo testfile.txt exists
+rm -r testdir
+rm testfile.txt
+test -d testdir && echo testdir exists
+test -f testfile.txt && echo testfile.txt exists
+[ -d testdir ] || echo directory testdir does not exist
+test -f testfile.txt || echo file testfile.txt does not exist
+exit
