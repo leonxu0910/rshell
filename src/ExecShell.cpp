@@ -8,6 +8,7 @@
 #include <stack>
 #include <cstring>
 #include <iostream>
+#include <algorithm>
 
 using std::string;
 using std::vector;
@@ -40,7 +41,10 @@ void ExecShell::parseLine(string userInput) {
     if (userInput == "") {  // empty input, dont do anything
         return;
     }
-    
+    if (static_cast<unsigned int>(std::count(userInput.begin(), userInput.end(), ' ')) == userInput.size()) {
+        return;
+    }
+
     int fpar = 0;
     int bpar = 0;
     int quote = 0;
@@ -49,12 +53,14 @@ void ExecShell::parseLine(string userInput) {
     bool isQuote = false;
     for (unsigned i = 0; i < userInput.size(); i++) {
         if (userInput.at(i) == '#' && !isQuote) {
+            //cout << "-----1-----" << endl;
             break;
         }
         else if (userInput.at(i) == ' ' && !isQuote) {
-            
+            //cout << "-----2-----" << endl;
         }
         else if (userInput.at(i) == '\"') {
+            //cout << "-----3-----" << endl;
             string temp;
             temp.push_back('\"');
             vToken.push_back(temp);
@@ -67,6 +73,7 @@ void ExecShell::parseLine(string userInput) {
             quote++;
         }
         else if (isCharOperator(userInput.at(i)) && !isQuote) {
+            //cout << "-----4-----" << endl;
             if (userInput.at(i) == '&') {
                 if (i+1 < userInput.size()) {
                     if (userInput.at(i+1) == '&') {
@@ -97,6 +104,7 @@ void ExecShell::parseLine(string userInput) {
             }
         }
         else if (isQuote) {
+            //cout << "-----5-----" << endl;
             tok.push_back(userInput.at(i));
             if (i+1 < userInput.size() && userInput.at(i+1) == '\"') {
                 vToken.push_back(tok);
@@ -104,6 +112,7 @@ void ExecShell::parseLine(string userInput) {
             }
         }
         else {
+            //cout << "-----6-----" << endl;
             tok.push_back(userInput.at(i));
             if (i+1 == userInput.size()) {
                 vToken.push_back(tok);
@@ -111,6 +120,7 @@ void ExecShell::parseLine(string userInput) {
             else {
                 if (i+1 < userInput.size()) {
                     if (isCharOperator(userInput.at(i+1))) {
+                        //cout << "-----61-----" << endl;
                         vToken.push_back(tok);
                         tok = "";
                     }
@@ -135,7 +145,7 @@ void ExecShell::parseLine(string userInput) {
     // }
     // cout << "-----------------------------------" << endl;
     
-    // Insert shell command from vector to queue
+    // Format shell command for each shell component and insert to vector
     vector<vector<string> > shellVec;
     vector<string> temp;
     bool is_quote = false;
@@ -150,11 +160,6 @@ void ExecShell::parseLine(string userInput) {
         }
         else if (is_quote) {
             temp.push_back(vToken.at(i));
-            if (i+1 < vToken.size()) {
-                if (vToken.at(i+1) == "\"") {
-                    shellVec.push_back(temp);
-                }
-            }
         }
         else if (!is_quote) {
             if (!isOperator(vToken.at(i))) {
@@ -162,25 +167,33 @@ void ExecShell::parseLine(string userInput) {
                 if (i+1 < vToken.size()) {
                     if (isOperator(vToken.at(i+1))) {
                         shellVec.push_back(temp);
+                        temp.clear();
                     }
-                }
-                else {
-                    shellVec.push_back(temp);
                 }
             }
             else {
-                temp.clear();
+                if (!temp.empty()) {
+                    shellVec.push_back(temp);
+                    temp.clear();
+                }
                 temp.push_back(vToken.at(i));
                 shellVec.push_back(temp);
                 temp.clear();
             }
         }
     }
+    if (!temp.empty()) {
+        shellVec.push_back(temp);
+    }
     if (shellVec.size() == 1 && shellVec.front().front() == ";") {
         cout << "error: invalid input" << endl;
     }
     if (!shellVec.empty() && shellVec.back().front() == ";") {
         shellVec.pop_back();
+    }
+    if (shellVec.empty()) {
+        cout << "error: invalid input" << endl;
+        return;
     }
     
     

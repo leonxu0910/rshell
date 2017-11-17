@@ -13,7 +13,7 @@ void And::execute() {
                 if (next->getStatus() == 1) {
                     status = 1;
                 }
-                else if (next->getStatus() == -1) {
+                else {
                     status = -1;
                 }
             }

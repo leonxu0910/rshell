@@ -13,13 +13,13 @@ class ExecShell {
     ~ExecShell();
     
     /*
-      Take user input and execute the command
+      Take the user input and execute a tree of command
     */
     void execute(std::string);
     
   private:
     /*
-      Parse user input into program readable format
+      Parse the user input into program readable format
     */
     void parseLine(std::string);
     
