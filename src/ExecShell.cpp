@@ -49,15 +49,12 @@ void ExecShell::parseLine(string userInput) {
     bool isQuote = false;
     for (unsigned i = 0; i < userInput.size(); i++) {
         if (userInput.at(i) == '#' && !isQuote) {
-            //cout << "-------------1------------" << endl;
             break;
         }
         else if (userInput.at(i) == ' ' && !isQuote) {
-            //cout << "-------------2------------" << endl;
             
         }
         else if (userInput.at(i) == '\"') {
-            //cout << "-------------3------------" << endl;
             string temp;
             temp.push_back('\"');
             vToken.push_back(temp);
@@ -70,7 +67,6 @@ void ExecShell::parseLine(string userInput) {
             quote++;
         }
         else if (isCharOperator(userInput.at(i)) && !isQuote) {
-            //cout << "-------------4------------" << endl;
             if (userInput.at(i) == '&') {
                 if (i+1 < userInput.size()) {
                     if (userInput.at(i+1) == '&') {
@@ -101,7 +97,6 @@ void ExecShell::parseLine(string userInput) {
             }
         }
         else if (isQuote) {
-            //cout << "-------------5------------" << endl;
             tok.push_back(userInput.at(i));
             if (i+1 < userInput.size() && userInput.at(i+1) == '\"') {
                 vToken.push_back(tok);
@@ -109,7 +104,6 @@ void ExecShell::parseLine(string userInput) {
             }
         }
         else {
-            //cout << "-------------6------------" << endl;
             tok.push_back(userInput.at(i));
             if (i+1 == userInput.size()) {
                 vToken.push_back(tok);
