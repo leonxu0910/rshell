@@ -15,4 +15,6 @@ To run testing files, change directory to tests and run the shell script.
 - Echo "123"123 should return 123123, but it returns 123 123, with a space in between.
 - Escape character such as \" does not work. echo \" does not output ".
 - Echo parentheses doesn't output error which it should.
+- Quote after a connector is not treated as an invalid command. Execution still continues. 
+- pwd command with an argument will cause "ignoring non-option arguments" error. 
 - Maybe a bug: Test command only supports at most two arguments, one flag (can be omitted) and one path. Test command outputs an error and returns (false) if no argument is present or number of argument is larger than two. 
