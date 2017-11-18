@@ -191,10 +191,6 @@ void ExecShell::parseLine(string userInput) {
     if (!shellVec.empty() && shellVec.back().front() == ";") {
         shellVec.pop_back();
     }
-    if (shellVec.empty()) {
-        cout << "error: invalid input" << endl;
-        return;
-    }
     
     
     //test
@@ -207,6 +203,11 @@ void ExecShell::parseLine(string userInput) {
     // cout << "----------------------------------- " << endl;
     
     shellVec = infixToPostfix(shellVec);
+    
+    if (shellVec.empty()) {
+        cout << "error: invalid input" << endl;
+        return;
+    }
     
     //test
     // for (unsigned i = 0; i < shellVec.size(); i++) {

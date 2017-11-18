@@ -3,9 +3,12 @@ test -f test_test.sh
 test -d ../src
 test -f ../src
 [-e test_test.sh]
-[-f test_test.sh]
-[-d ../src]
-[-f ../src]
+[test_test.sh]
+[ test_test.sh ]
+[ -e test_test.sh ]
+[ -f test_test.sh ]
+[ -d ../src ]
+[ -f ../src ]
 mkdir testdir
 touch testfile.txt
 test -d testdir && echo testdir exists
@@ -15,6 +18,9 @@ rm testfile.txt
 test -d testdir && echo testdir exists
 test -f testfile.txt && echo testfile.txt exists
 [ -d testdir ] || echo directory testdir does not exist
-test -f testfile.txt || echo file testfile.txt does not exist
-((echo a; test exit.sh) && echo [-f multi_command_test] || echo hello); ((test -d src && echo l) || ls && echo bye) || ([-d ../src] && echo goodbye)
+test -f testfile.txt || echo "file testfile.txt does not exist"
+(test -e test || (test -e ../ && echo a))
+(test -e test || (test -e ../ || echo a))
+((echo a; test tests) && echo [ -f multi_command_test ] || echo hello); ((test -d src && echo l) || ls && echo bye) || ([ -d ../src ] && echo goodbye)
+(echo a; test -e tests && echo [ -f multi_command_test ] || echo hello); ((test -d src && echo l) || (ls && echo bye) || [ -d ../src ] && echo goodbye)
 exit

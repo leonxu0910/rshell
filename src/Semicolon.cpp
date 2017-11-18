@@ -9,6 +9,8 @@ void Semicolon::execute() {
     prev->execute();
     if (next != 0) {
         next->execute();
+        if (next->getStatus() == 1) {
+            status = 1;
+        }
     }
-    status = 1;
 }

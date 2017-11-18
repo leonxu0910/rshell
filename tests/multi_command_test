@@ -9,4 +9,8 @@ echo "A" || echo B || echo 312
 echo "A || echo B" || echo 312
 echo A || echo B && echo 312;
 echo A && echo d && echo 123
+cal && echo "12 1 3 && ||    "
+cat 234 || ls; echo "12312;"
+echo a&&echo b;cat c||echo d
+echo a;echo b;cat c||echo d
 exit

@@ -11,4 +11,21 @@ echa AB
 ls asdasd
 cat "123"
 cal
+echo &&
+echo && && ||
+echo;
+echo [[][][][][][][][[]]]][][][][
+echo 123"123"
+echo "123"345
+echo "345"345"234"
+echo "a 12      34     "
+echo "     "
+echo "   && || ;  "
+echo echo echo
+echo """1"""
+echo "" && || ; ""
+echo """    &&  || """
+echo "" echo 123 && echo 345 ;echo 456""
+echo """ echo 123 && echo 345 ;echo 456"""
+echo "cat 234 || ls; echo "12312;""
 exit
